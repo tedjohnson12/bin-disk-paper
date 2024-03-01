@@ -3,6 +3,8 @@
 \usepackage{showyourwork}
 
 \newcommand\ghurl[0]{\url{https://github.com/tedjohnson12/bin-disk-paper}}
+\newcommand\getref[0]{(\textcolor{red}{ref?})}
+\newcommand\question[1]{[\textcolor{red}{#1}]}
 
 % Begin!
 \begin{document}
@@ -12,11 +14,11 @@
 
 % Author list
 \author{Ted Johnson}
-\affiliation{University of Nevada, Las Vegas}
+\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \author{Rebecca Martin}
-\affiliation{University of Nevada, Las Vegas}
+\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \author{Stephen Lepp}
-\affiliation{University of Nevada, Las Vegas}
+\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 
 % Abstract with filler text
 \begin{abstract}
@@ -27,27 +29,82 @@
     to quantify the probabilities of the various configurations in a given system.
 \end{abstract}
 
-% Main body with filler text
 \section{Introduction}
 \label{sec:intro}
 
-[\textcolor{red}{Why?}]
+
 
 Circumbinary planets -- those orbiting two stars -- have been mostly found to orbit in the same plane as
-their hosts \citep{2011Sci...333.1602D,2012ApJ...758...87O,2012Natur.481..475W}. However, \citet{2023ApJ...957L..28M}
-found evidence for a circumbinary planet that orbits nearly perpendicular to the binary orbinal plane.
+their hosts \citep{doyle2011,orosz2012,welsh2012}. However, \citet{aly2015} and \citet{martin2017} found that disks around eccentric binaries
+can evolve to a polar state if their inclination is perturbed from coplanar. AC Her, a post-AGB system with a polar-inclined
+disk, is believed to host the first circumbinary planet found in a polar orbit \citep{martin2023}.
+
+
+The orbital parameters of these planets, and the disks that they form from, are determined from their interaction history with their
+host stars. These interactions can be broadly split into two catagories:
+
+\begin{enumerate}
+    \item {\bf Precession about the angular momentum vector of the binary.} In the case where the planet/disk
+        is slightly misaligend, its own angular momentum vector precesses about that of the binary \citep[e.g.,][]{bate2000,lubow2000}.
+        This is characterized by near constant
+        inclination and oscillation of the longitude of the ascending node. Included in this case is the subclassification
+        of retrograde orbits (those whose angular momentum vectors are misaligend by $\sim 180 \deg$) and the two
+        trivial cases of perfectly aligned/misaligend orbits which do not precess. \label{enum:precession}
+    \item {\bf Libration about the eccentricity vector of the binary.} In the case where misalignment is high (i.e. near
+    perpendicular) the angular momentum of the planet/disk will librate about the eccentricity vector of the binary 
+    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}.
+    \label{enum:libration}
+\end{enumerate}
+
+Planets form with orbital characteristics given by their progenitor disks \citep[e.g.,][]{childs2021}, so it is sufficient in this work to
+discuss disk dynamics only.
+Differential precession between adjacent annular regions in a disk cause dissapation, ultimately dampening precession or libration
+so that the disk reaches a steady state on its viscous timescale \citep[see also \citet{nixon2011,foucart2013,foucart2014}]{bate2000}. Therefore, it is appropriate to map a disk's
+initial interactions with a binary (prograde precession, libration, retrograde precession) to the disk's final configuration
+(prograte coplanar, circumpolar, retrograde coplanar, respectively).
+
+In the case of a massless disk, the type of interaction can be determined analytically from just the binary eccentricity and the
+direction of the disk's specific angular momentum vector
+\citep[parameterized by the disk inclination and its longitude of the ascending node][]{zanazzi2018}.
+Given priors on these quantities we can predict the observed frequencies of circumbinary disks (and planets) in the polar configuration.
+\citet{ceppi2024} do just this -- finding the fractions of binaries with polar disks and the mean eccentricities of those binaries
+as a function of two free parameters.
+
+In this work we will study the more general case of a massive disk. The resulting polar frequency function only contains one
+additional parameter, but the orbital parameters of the binary can now change due to interactions with the disk. The additional
+complications of this case require the application of numerical simulations; we use the N-body code REBOUND \citep{rebound} to simulate the
+dynamics of a three-body system, with a massive point particle used as a stand-in for the disk. In Section \ref{sec:methods}
+we describe this setup in detail.
+
+
+
+\section{Methods}
+\label{sec:methods}
+
+\section{Results}
+\label{sec:results}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+
+
 
 
 \section{Acknowledgements}
 \label{sec:ack}
 
-This manuscript was prepared using the open-science software \href{https://show-your.work/en/latest/intro/}{\showyourwork} \citep{Luger2021}, making the article completely
+This manuscript was prepared using the open-science software \href{https://show-your.work/en/latest/intro/}{\showyourwork} \citep{luger2021}, making the article completely
 reproducible. The source code to compile this document and create the figures is available on GitHub\footnote{\ghurl}.
 
-[\textcolor{red}{REBOUND}]
+Simulations in this paper made use of the REBOUND N-body code \citep{rebound}.
+The simulations were integrated using IAS15, a 15th order Gauss-Radau integrator \citep{reboundias15}. 
 
 [\textcolor{red}{Cherry Creek}]
 
-\bibliography{bib}
+\bibliography{cbdisk,syw,reb}
 
 \end{document}

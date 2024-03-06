@@ -45,17 +45,20 @@ optimize_caching: false
 # Overleaf sync settings
 overleaf:
   # Overleaf project ID (blank = disabled)
-  id: 
+  # id: 65e8b46837a52b7c171b8c72
   # Perform sync on GitHub Actions?
   gh_actions_sync: true
   # List of files to push to Overleaf
   push:
     - src/tex/figures
     - src/tex/output
+    - src/tex/ms.tex
+    - src/tex/reb.bib
+    - src/tex/syw.bib
+    - src/tex/cbdisk.bib
+
   # List of files to pull from Overleaf
   pull:
-    - src/tex/ms.tex
-    - src/tex/bib.bib
 
 # Always require all input files to be present on disk for workflow to pass?
 require_inputs: true

@@ -1,10 +1,14 @@
 % Define document class
 \documentclass[twocolumn]{aastex631}
 \usepackage{showyourwork}
+\usepackage{amsmath}
 
 \newcommand\ghurl[0]{\url{https://github.com/tedjohnson12/bin-disk-paper}}
+\newcommand\codeurl[0]{\url{https://github.com/tedjohnson12/misaligned_cb_disk}}
 \newcommand\getref[0]{(\textcolor{red}{ref?})}
 \newcommand\question[1]{[\textcolor{red}{#1}]}
+
+\DeclareMathOperator{\arctantwo}{arctan2}
 
 % Begin!
 \begin{document}
@@ -54,14 +58,16 @@ host stars. These interactions can be broadly split into two categories:
         trivial cases of perfectly aligned/misaligend orbits which do not precess. \label{enum:precession}
     \item {\bf Libration about the eccentricity vector of the binary.} In the case where misalignment is high (i.e. near
     perpendicular) the angular momentum of the planet/disk will librate about the eccentricity vector of the binary 
-    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}.
+    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. In this case the mutual inclination of the disk oscillates about the
+    polar configuration.
     \label{enum:libration}
 \end{enumerate}
 
 Planets form with orbital characteristics given by their progenitor disks \citep[e.g.,][]{childs2021}, so it is sufficient in this work to
 discuss disk dynamics only.
 Differential precession between adjacent annular regions in a disk cause dissipation, ultimately dampening precession or libration
-so that the disk reaches a steady state on its viscous timescale \citep[see also \citet{nixon2011,foucart2013,foucart2014}]{bate2000}. Therefore, it is appropriate to map a disk's
+so that the disk reaches a steady state on its viscous timescale \citep[see also \citet{nixon2011,foucart2013,foucart2014}]{bate2000}.
+Therefore, it is appropriate to map a disk's
 initial interactions with a binary (prograde precession, libration, retrograde precession) to the disk's final configuration
 (prograde coplanar, circumpolar, retrograde coplanar, respectively).
 
@@ -75,13 +81,111 @@ as a function of two free parameters.
 In this work we will study the more general case of a massive disk. The resulting polar frequency function only contains one
 additional parameter, but the orbital parameters of the binary can now change due to interactions with the disk. The additional
 complications of this case require the application of numerical simulations; we use the N-body code REBOUND \citep{rebound} to simulate the
-dynamics of a three-body system, with a massive point particle used as a stand-in for the disk. In Section \ref{sec:methods}
-we describe this setup in detail.
+dynamics of a three-body system, with a massive point particle used as a stand-in for the disk. \citet{abod2022} found that this 3-body
+setup is a valid description of a disk with angular momentum equal to that of the third body in the limit that the disk mass does not change
+(i.e. no accretion). This setup also cannot account for warping effects and disk breakage as we must treat the disk as a solid body. 
+We describe this setup in detail in Section \ref{sec:methods}
 
+\question{describe the regime we are working in}
 
 
 \section{Methods}
 \label{sec:methods}
+We use the N-body code \texttt{REBOUND} \citep{rebound} to simulate a 3-body system. The code used to run these simulations is publically
+available\footnote{\codeurl}.
+
+\subsection{Simulation Setup}
+\label{subsec:setup}
+
+\begin{table*}
+    \begin{tabular}{cccp{0.5\textwidth}}
+        \hline
+        name & symbol & type & description \\
+        \hline
+        \texttt{mass\_binary} & $M_b$ & \texttt{float} & The total mass of the binary in solar masses. \\
+        \texttt{mass\_fraction} & $f_b$ & \texttt{float} & The ratio between the secondary mass and the binary mass $M_2/M_b$. \\
+        \texttt{semimajor\_axis\_binary} & $a_b$ & \texttt{float} & The semimajor axis of the binary orbit. \\
+        \texttt{eccentricity\_binary} & $e_b$ & \texttt{float} & The eccentricity of the binary orbit. \\
+        \texttt{mass\_planet} & $m_p$ & \texttt{float} & The mass of the third body. \\
+        \texttt{semimajor\_axis\_planet} & $a_p$ & \texttt{float} & The semimajor of the third body orbiting the binary center of mass. \\
+        \texttt{inclination\_planet} & $i$ & \texttt{float} & The mutual inclination of the binary and the third body. \\
+        \texttt{lon\_ascending\_node\_planet} & $\Omega$ & \texttt{float} & The longitude of the ascending node of the third body. \\
+        \texttt{true\_anomaly\_planet} & $\nu$ & \texttt{float} & The true anomaly of the third body. \\
+        \texttt{gr} & - & \texttt{bool} & Whether to include effects from general relativity. \\
+        \texttt{eccentricity\_planet} & $e_p$ & \texttt{float} & The eccentricity of the third body's orbit. \\
+        \texttt{arg\_pariapsis\_planet} & $\omega$ & \texttt{float} & The argument of pariapsis of the third body's orbit. \\
+        \hline
+    \end{tabular}
+    \caption{Simulation parameters}
+    \label{tab:params}
+\end{table*}
+
+We use \texttt{REBOUND}'s Python interface to initialize our simulation. Table \ref{tab:params} describes the simulation's
+input parameters. We then integrate the system using the IAS15 15th order Gauss-Radau integrator \citep{reboundias15}
+until we can determine the system's state.
+
+\subsubsection{Determining the state}
+\label{subsubsec:state}
+We integrate the system 5 (third-body) orbits at a time, capturing the positions and velocities of each particle afterwards.
+Between each step we attempt to assign an end-state to the system. This is done by computing $i$ and $\Omega$ and checking them against
+two criteria:
+\begin{enumerate}
+    \item Has $\Delta\Omega$ changed sign? In a precessing orbit $\Omega$ changes monotonically. If 
+    $\frac{d\Omega}{dt}$ changes from positive to negative (or vise-versa) then we can be sure we have found a librating state.
+    \label{item:omega}
+    \item Has $i~\sin{\Omega}$ crossed zero? In a librating state this quantity will never change sign. 
+    \label{item:sign}
+\end{enumerate}
+ Determining the state is done iteratively and only requires that $i$ and $\Omega$
+be known at each timestep. If neither criteria are true then we do not yet have enough information, and we continue the integration.
+If criterion \ref{item:omega} is true then the system is librating. If criterion \ref{item:sign} is true then the system is precessing.
+There is no know configuration that would allow both criteria to be true.
+
+In order to compute $i$ and $\Omega$ we must first define a coordinate system. \texttt{REBOUND} outputs the positions and
+velocities of each particle in the center-of-mass frame. We then use the binary to define a time-dependent coordinate system.
+We define the z-axis to be along the angular momentum vector of the binary, the x-axis to be along the eccentricity vector, and the
+y-axis so that the coordinate system is right-handed.
+
+\begin{equation}
+\begin{aligned}
+    \hat{z} & = \vec{L}/\|\vec{L}\| \\
+    \hat{x} & = \vec{e}/\|\vec{e}\| \\
+    \hat{y} & = - \hat{x} \times \hat{z}
+    \label{eq:coords}
+\end{aligned}
+\end{equation}
+
+We can then compute $i$ and $\Omega$ from the specific angular momentum $\vec{h}$.
+
+\begin{equation}
+    \cos{i} = \frac{\vec{h} \cdot \hat{z}}{\|\vec{h}\|}
+    \label{eq:inclination}
+\end{equation}
+
+\begin{equation}
+    \Omega = \arctantwo (\vec{h} \cdot \hat{x}, -\vec{h} \cdot \hat{y})
+    \label{eq:omega}
+\end{equation}
+
+\begin{figure}
+    \begin{centering}
+        \includegraphics{figures/sim_example.pdf}
+        \caption{Example of system simulation and state determination. This figure tracks the orbital parameters
+        of a massless third body orbiting a $1 M_\odot$ binary with equal mass stars and $e_b = 0.4$.
+        Initially $\Omega = \frac{\pi}{2}$.
+        Solid lines indicate
+        the portion of the simulation that is required to determine the state. Dashed lines complete the evolution back to the system's
+        initial conditions but are not needed for our analysis. In general, we will only integrate until the state of the system can be
+        determined.}
+        \label{fig:sim_example}
+        \script{sim_example.py}
+    \end{centering}
+\end{figure}
+
+Figure \ref{fig:sim_example} shows a set of example simulations along with their determined states. Visualizing the 
+system in this way makes it clear why we have chosen our two criteria. Librating orbits will never cross the x-axis
+and will cause the polar angle ($\Omega$) to turn back before reaching $0$ or $\pi$. Precessing orbits (both prograde and retrograde)
+travel approximately in circles with near-constant $i$.
 
 \section{Results}
 \label{sec:results}

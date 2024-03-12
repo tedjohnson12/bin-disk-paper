@@ -1,4 +1,10 @@
 dependencies:
+  - python==3.9
   - pip
   - pip:
       - matplotlib==3.4.3
+      - daft
+      - git+https://github.com/tedjohnson12/misaligned_cb_disk.git@main
+      - rebound
+      - reboundx
+      - tqdm

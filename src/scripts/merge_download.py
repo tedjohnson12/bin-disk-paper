@@ -41,7 +41,7 @@ if __name__ == '__main__':
         zip_ref.extractall(SRC_PATH)
     print('Done!')
     print('Deleting zip file')
-    # ZIP_FILE_PATH.unlink()
+    ZIP_FILE_PATH.unlink()
     print('Done!')
     print(f'Running showyourwork! from {REPO_PATH}')
     with Popen(['showyourwork', 'build'], cwd=REPO_PATH,stdout=PIPE) as p:

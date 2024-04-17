@@ -130,12 +130,38 @@ until we can determine the system's state.
 
 \subsubsection{Determining the state}
 \label{subsubsec:state}
-We integrate the system 5 (third-body) orbits at a time, capturing the positions and velocities of each particle afterwards. \RGM{I'm not sure what the 5 means?}
-%Between each step we attempt to assign an end-state to the system.
-\RGM{We describe the type of orbit by}
-%This is done by 
-computing $i$ and $\Omega$ \RGM{include equations and descriptions for i and $\Omega$ here} and checking them against
-two criteria:
+We integrate the system, checking its state every 5 orbits of the third body.
+We describe the type of orbit by computing the mutual inclination $i$ and the
+longitude of the ascending node $\Omega$, which are defined:
+
+\begin{equation}
+    \cos{i} = \frac{\bm{L} \cdot \hat{\bm{z}}}{\|\bm{L}\|}
+    \label{eq:inclination}
+\end{equation}
+
+and
+
+\begin{equation}
+    \Omega = \arctantwo (\bm{L} \cdot \hat{\bm{x}}, -\bm{L} \cdot \hat{\bm{y}})
+    \label{eq:omega}
+\end{equation}
+
+Where $\bm{L}$ is the angular momentum of the third body.
+The coordinate system is defined relative to the binary, with the $z$-axis to be along the
+angular momentum vector, the $x$-axis to be along the eccentricity vector, and the
+$y$-axis so that the coordinate system is right-handed.
+
+\begin{equation}
+    \begin{aligned}
+        \hat{\bm{z}} & = \bm{L}/\|\bm{L}\| \\
+        \hat{\bm{x}} & = \bm{e}/\|\bm{e}\| \\
+        \hat{\bm{y}} & = - \hat{\bm{x}} \times \hat{\bm{z}}
+        \label{eq:coords}
+    \end{aligned}
+\end{equation}
+    
+The final state of the three-body system is assessed according to two criteria:
+
 \begin{enumerate}
     \item Has $\Delta\Omega$ changed sign? In a precessing orbit $\Omega$ changes monotonically. If 
     $\frac{d\Omega}{dt}$ changes from positive to negative (or vise-versa) then we can be sure we have found a librating state.
@@ -143,36 +169,10 @@ two criteria:
     \item Has $i~\sin{\Omega}$ crossed zero? In a librating state this quantity will never change sign. 
     \label{item:sign}
 \end{enumerate}
- Determining the state is done iteratively and only requires that $i$ and $\Omega$
-be known at each timestep. If neither criteria are true then we do not yet have enough information, and we continue the integration.
+
+If neither criteria are true then we do not yet have enough information, and we continue the integration.
 If criterion \ref{item:omega} is true then the system is librating. If criterion \ref{item:sign} is true then the system is precessing.
 There is no configuration that would allow both criteria to be true.
-
-In order to compute $i$ and $\Omega$ we must first define a coordinate system. {\sc rebound} outputs the positions and
-velocities of each particle in the center-of-mass frame. We then use the binary to define a time-dependent coordinate system.
-We define the $z$-axis to be along the angular momentum vector of the binary, the $x$-axis to be along the eccentricity vector, and the
-$y$-axis so that the coordinate system is right-handed.
-
-\begin{equation}
-\begin{aligned}
-    \hat{\bm{z}} & = \bm{L}/\|\bm{L}\| \\
-    \hat{\bm{x}} & = \bm{e}/\|\bm{e}\| \\
-    \hat{\bm{y}} & = - \hat{\bm{x}} \times \hat{\bm{z}}
-    \label{eq:coords}
-\end{aligned}
-\end{equation}
-We can then compute $i$ and $\Omega$ from the angular momentum $\bm{L}$.
-
-\begin{equation}
-    \cos{i} = \frac{\bm{L} \cdot \hat{z}}{\|\bm{L}\|}
-    \label{eq:inclination}
-\end{equation}
-
-\begin{equation}
-    \Omega = \arctantwo (\bm{L} \cdot \hat{\bm{x}}, -\bm{L} \cdot \hat{\bm{y}})
-    \label{eq:omega}
-\end{equation}
-
 
 \begin{figure}
     \begin{centering}

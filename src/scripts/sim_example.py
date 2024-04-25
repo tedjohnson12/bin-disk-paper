@@ -21,7 +21,7 @@ eb = 0.4
 
 mp = 0e-3
 ap = 1
-i_arr = np.array([0.1,0.2,0.3,0.4,0.5,-0.3,-0.4,-0.5,0.8,0.9])*np.pi
+i_arr = np.array([0.1,0.2,0.3,0.4,0.5,-0.3,-0.4,-0.5,0.8,0.9,1.0])*np.pi
 
 color = {
     system.UNKNOWN : colors.brown,

@@ -83,6 +83,41 @@ def get_mass_planet(
     assert roots.size == 1, f"Unexpected number of roots: {roots}"
     return roots[0]
 
+# # Mdisk = 0.1Mb
+# def get_a_planet()
+
+
+def represent_j(_j: float) -> str:
+    """
+    Represent the relative angular momentum as a string.
+
+    Parameters
+    ----------
+    _j : float
+        The relative angular momentum
+
+    Returns
+    -------
+    str
+        The string representation of the relative angular momentum.
+    """
+    is_small = _j < 0.1
+    if is_small:
+        is_power_of_ten = np.log10(_j) % 1 == 0
+        if is_power_of_ten:
+            return f'10^{{{int(np.log10(_j))}}}'
+        else:
+            return f'{_j:.1f}'
+    else:
+        is_whole = _j % 1 == 0
+        if is_whole:
+            return f'{int(_j)}'
+        else:
+            has_one_decimal = 10*_j % 1 == 0
+            if has_one_decimal:
+                return f'{_j:.1f}'
+            else:
+                return f'{_j:.2f}'
 
 if __name__ == "__main__":
     print(get_mass_planet(

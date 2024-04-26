@@ -26,7 +26,11 @@ GR = False
 
 N_ANALYTIC = 1000
 CONFIDENCE_INTERVAL_WIDTH = 0.3
-CONFIDENCE_LEVEL = 0.95
+CONFIDENCE_LEVEL = 0.68
+BATCH_SIZE = 1
+CAPTURE_FREQ = 1/30
+MAX_ORBITS = 30000
+ORBIT_STEP = 100
 
 ECCENTRICITIES = [0.1,0.3, 0.5, 0.7,0.9]
 ECCENTRICITIES_ANALYTIC = np.linspace(0, 1, 100)
@@ -76,7 +80,10 @@ def do_mc(e_bin: float, _j: float) -> tuple[float, float]:
         rng=None,
         db_path=DB_PATH
     )
-    sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=20)
+    sampler._integration_capture_freq = CAPTURE_FREQ
+    sampler._integration_orbit_step = ORBIT_STEP
+    sampler._integration_max_orbits = MAX_ORBITS
+    sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=BATCH_SIZE)
     result = sampler.bootstrap(
         system.LIBRATING, confidence_level=CONFIDENCE_LEVEL)
     return result.confidence_interval.low, result.confidence_interval.high
@@ -112,6 +119,7 @@ def plot_mc(_ax: plt.Axes, _j: float, _color: str):
     lows = []
     highs = []
     for ecc in ECCENTRICITIES:
+        print(f'Running Monte Carlo for j={_j} ecc={ecc}')
         low, high = do_mc(ecc, _j)
         lows.append(low)
         highs.append(high)
@@ -119,7 +127,7 @@ def plot_mc(_ax: plt.Axes, _j: float, _color: str):
     highs = np.array(highs)
     mid = (lows+highs)/2
     _ax.errorbar(ECCENTRICITIES, mid, yerr=(highs-lows)/2, fmt='.', c=_color,
-                 label=f'$j=10^{{{np.log10(_j):.1f}}}$', markersize=10, zorder=90)
+                 label=f'$j={helpers.represent_j(_j)}$', markersize=10, zorder=90)
 
 
 if __name__ in '__main__':

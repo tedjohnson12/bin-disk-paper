@@ -5,7 +5,6 @@ Compare the phase diagram for the massless case to that of the massive case.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from tqdm.auto import tqdm
 
 import paths
 import helpers
@@ -13,7 +12,6 @@ import colors
 
 from polar_disk_freq import system, mc, search
 from polar_disk_freq.utils import STATE_LONG_NAMES
-from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma
 
 color = {
     system.UNKNOWN : colors.brown,
@@ -225,7 +223,17 @@ if __name__ in '__main__':
         _ax.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
         _ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
         _ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
-        _ax.text(0.8*np.pi,1.15*np.pi,f'$j={helpers.represent_j(j)}$',ha='right',va='top',fontsize=12)
+        _ax.text(-0.9*np.pi,1.15*np.pi,f'$j={helpers.represent_j(j)}$',ha='left',va='top',fontsize=12)
+        
+        res = sampler.bootstrap(system.LIBRATING,confidence_level=0.68)
+        lo,hi = res.confidence_interval
+        means = res.bootstrap_distribution
+        std = res.standard_error
+        mean = 0.5*(lo+hi)
+        s = f'$f_{{\\rm polar}} = {mean:.2f} \\pm {std:.2f}$'
+        _ax.text(0.9*np.pi,1.15*np.pi,s,ha='right',va='top',fontsize=12)
+
+          
     
     
     # n = 1000

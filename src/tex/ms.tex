@@ -218,6 +218,8 @@ less than a minute to get a very accurate measure of the polar fraction.
             as in Figure \ref{fig:mc}, but for $j=0.66$, which is its critical value \citep[see][]{martin2019,abod2022}. The grid here includes 250,000 points.
             There is some disagreement between RKF and {\sc REBOUND}, which we attribute to misclassification due to behavior on the orbital timescale (i.e. 
             small variations in $\Omega$ that cause the simulation to temporarily cross the $y$-axis twice, giving the false appearance of libration). \TJ{We can fix this}
+            The MC result gives $f_{\text{polar}} = \variable{output/mc_out.txt}$ while the RKF result gives $f_{\text{polar}} = \variable{output/rk_out.txt}$ with
+            numerical error on the order of $\variable{output/rk_err.txt}$.
         }
         \script{compare_massive.py}
         \label{fig:rkf}

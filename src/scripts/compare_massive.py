@@ -6,6 +6,7 @@ Compare the phase diagram for the massless case to that of the massive case.
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm.auto import tqdm
+from scipy.integrate import simpson
 
 import paths
 import helpers
@@ -26,6 +27,10 @@ color = {
 
 OUTFILE = paths.figures / 'compare_massive.pdf'
 DB_PATH = paths.data / 'mc.db'
+mc_out = paths.output/'mc_out.txt'
+rk_out = paths.output/'rk_out.txt'
+rk_err = paths.output/'rk_err.txt'
+
 
 MASS_BINARY = 1
 FRAC_BINARY = 0.5
@@ -243,28 +248,55 @@ if __name__ in '__main__':
     # ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
     # ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
     # plt.tick_params(labelsize=24)
-    ax_cartesian.text(0.9*np.pi,1.15*np.pi,f'$j={helpers.represent_j(J)}$',ha='right',va='top',fontsize=12)
+    ax_cartesian.text(-0.9*np.pi,1.15*np.pi,f'$j={helpers.represent_j(J)}$',ha='left',va='top',fontsize=12)
+    
+    res = sampler.bootstrap(system.LIBRATING,0.68)
+    lo,hi = res.confidence_interval
+    means = res.bootstrap_distribution
+    std = res.standard_error
+    mean = 0.5*(lo+hi)
+    s = f'{mean:.2f} \\pm {std:.2f}'
+    with open(mc_out,'w',encoding='utf-8') as f:
+        f.write(s)
     
     
-    n = 500
-    m = 500
-    i_arr = np.linspace(0,np.pi,n,endpoint=False)
-    omega_arr = np.linspace(0,2*np.pi,m)
-    state_arr = np.zeros((n,m),dtype=int)
-    gamma = get_gamma(ECC_BIN,J)
-    state_mapper = {
-        'u':0,
-        'p':1,
-        'l':2,
-        'r':3
-    }
-    for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
-        for _m, omega in enumerate(omega_arr):
-            x,y,z = init_xyz(i,omega)
-            _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
-            state_arr[_n,_m] = state_mapper[state]
     
-    ax_polar.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
+    frac_low = None
+    frac_high = None
+    for _i,(n, m) in enumerate(zip([400,800],[400,800])):
+        i_arr = np.linspace(0,np.pi,n,endpoint=False)
+        omega_arr = np.linspace(0,2*np.pi,m)
+        state_arr = np.zeros((n,m),dtype=int)
+        gamma = get_gamma(ECC_BIN,J)
+        state_mapper = {
+            'u':0,
+            'p':1,
+            'l':2,
+            'r':3
+        }
+        for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
+            for _m, omega in enumerate(omega_arr):
+                x,y,z = init_xyz(i,omega)
+                _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
+                state_arr[_n,_m] = state_mapper[state]
+        
+        ax_polar.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
+        
+        oo,ii = np.meshgrid(omega_arr,i_arr)
+        area = np.sin(ii)
+        is_polar = state_arr==state_mapper['l']
+        integrand2d = area*is_polar
+        integrand1d = simpson(y=integrand2d,x=omega_arr,axis=1)
+        frac = simpson(y=integrand1d,x=i_arr)/(4*np.pi)
+        if _i == 0:
+            frac_low = frac
+        else:
+            frac_high = frac
+    error = abs(frac_high-frac_low)
+    with open(rk_out,'w',encoding='utf-8') as f:
+        f.write(f'{frac_low:.2f}')
+    with open(rk_err,'w',encoding='utf-8') as f:
+        f.write(f'10^{{{round(np.log10(error)):.0f}}}')
     
     
     fig.savefig(OUTFILE)

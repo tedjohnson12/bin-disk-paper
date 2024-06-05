@@ -36,7 +36,7 @@ def run(i:float,e:float)->system.System:
     binary = params.Binary(mb,fb,ab,e)
     planet = params.Planet(mp,ap,i,np.pi/2,0,0,0)
     sim = rebound.Simulation()
-    _sys = system.System(binary,planet,sim)
+    _sys = system.System(binary,planet,gr=False,sim=sim)
     _sys.integrate_to_get_state(step=5,capture_freq=2)
     
     return _sys
@@ -44,7 +44,7 @@ def run_full(i:float,e:float)->system.System:
     binary = params.Binary(mb,fb,ab,e)
     planet = params.Planet(mp,ap,i,np.pi/2,0,0,0)
     sim = rebound.Simulation()
-    _sys = system.System(binary,planet,sim)
+    _sys = system.System(binary,planet,gr=False,sim=sim)
     _sys.integrate_to_get_path(step=10, capture_freq=2)
     
     return _sys

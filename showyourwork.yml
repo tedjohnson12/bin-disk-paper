@@ -17,7 +17,7 @@ datasets:
 dependencies:
   src/scripts/compare_massive.py:
   - src/data/mc.db
-  src/scripts/mc_example.py
+  src/scripts/mc_example.py:
   - src/data/mc.db
 ms_name: ms
 optimize_caching: false

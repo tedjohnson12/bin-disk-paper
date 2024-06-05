@@ -11,19 +11,22 @@ import rebound
 
 import paths
 import colors
+import helpers
 
-PATH = paths.figures / 'sim_example.pdf'
+PATH = paths.figures / 'sim_example_copy.pdf'
 
-plt.style.use('bmh')
+mb = 1.4+0.73
+fb = 1.4/mb
+ab = 2.83
+eb = 0.206
 
-mb = 1
-fb = 0.5
-ab = 0.2
-eb = 0.4
+j = 0.0735/1.1528
+ap = 5*ab
+mp = helpers.get_mass_planet(j,mb,fb,eb,ab,ap,0)
+# mp = 0.001
+# ap = helpers.get_a_planet(j,mb,fb,eb,ab,mp,0)
 
-mp = 0e-3
-ap = 1
-i_arr = np.array([0.1,0.2,0.3,0.4,0.5,-0.3,-0.4,-0.5,0.8,0.9,1.0])*np.pi
+i_arr = np.array([0.1,0.2,0.3,0.4,0.5])*np.pi
 
 color = {
     system.UNKNOWN : colors.brown,
@@ -36,16 +39,16 @@ def run(i:float,e:float)->system.System:
     binary = params.Binary(mb,fb,ab,e)
     planet = params.Planet(mp,ap,i,np.pi/2,0,0,0)
     sim = rebound.Simulation()
-    _sys = system.System(binary,planet,gr=False,sim=sim)
-    _sys.integrate_to_get_state(step=5,capture_freq=2)
+    _sys = system.System(binary,planet,sim)
+    _sys.integrate_to_get_state(step=5,capture_freq=2,max_orbits=10000)
     
     return _sys
 def run_full(i:float,e:float)->system.System:
     binary = params.Binary(mb,fb,ab,e)
     planet = params.Planet(mp,ap,i,np.pi/2,0,0,0)
     sim = rebound.Simulation()
-    _sys = system.System(binary,planet,gr=False,sim=sim)
-    _sys.integrate_to_get_path(step=10, capture_freq=2)
+    _sys = system.System(binary,planet,sim)
+    _sys.integrate_to_get_path(step=10, capture_freq=2,max_orbits=10000)
     
     return _sys
 
@@ -72,12 +75,6 @@ if __name__ in '__main__':
     ax.set_xlabel('$i~\\cos{\\Omega}$')
     ax.set_ylabel('$i~\\sin{\\Omega}$')
     ax.legend(lines,["Prograde","Retrograde","Librating","Unnecessary"])
-    ax.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
-    ax.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
-    ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
-    ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
-    
-    fig.tight_layout()
     
     fig.savefig(PATH)
 

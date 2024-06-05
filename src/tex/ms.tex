@@ -2,11 +2,15 @@
 \documentclass[twocolumn]{aastex631}
 \usepackage{showyourwork}
 \usepackage{amsmath}
+\usepackage{bm}
 
 \newcommand\ghurl[0]{\url{https://github.com/tedjohnson12/bin-disk-paper}}
 \newcommand\codeurl[0]{\url{https://github.com/tedjohnson12/misaligned_cb_disk}}
 \newcommand\getref[0]{(\textcolor{red}{ref?})}
 \newcommand\question[1]{[\textcolor{red}{#1}]}
+
+\newcommand{\TJ}[1]{\textcolor{orange}{#1}}
+\newcommand{\RGM}[1]{\textcolor{cyan}{#1}}
 
 \DeclareMathOperator{\arctantwo}{arctan2}
 
@@ -18,19 +22,22 @@
 
 % Author list
 \author{Ted Johnson}
-\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
-\author{Rebecca Martin}
-\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
+%\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
+\author{Rebecca G. Martin}
+%\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \author{Stephen Lepp}
+\affiliation{Nevada Center for Astrophysics, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
+\author{Stephen H. Lubow}
+\affiliation{Space Telescope Science Institute, 3700 San Martin Drive, Baltimore, MD 21218, USA}
 
 % Abstract with filler text
 \begin{abstract}
-    Inclined circumbinary disks settle to coplanar or polar-aligned configurations with respect to the binary host.
+    Circumbinary gas disks that are misaligned to the binary orbital plane evolve toward either a coplanar or a polar-aligned configuration with respect to the binary host.
     The preferred alignment can be found analytically
-    in the case of a massless disk, however disk-star interactions make the general case much more challenging.
-    We employ the N-body code REBOUND to investigate the dynamics of these 3-body systems and use Monte Carlo methods
-    to quantify the probabilities of the various configurations in a given system.
+    in the limit of a massless disk, however disk-binary interactions make the massive disk case much more challenging.
+    We employ the N-body code {\sc rebound} to investigate the dynamics of  3-body systems and use Monte Carlo methods
+    to quantify the probabilities of each alignment for an initially randomly orientated disk around a given system.
 \end{abstract}
 
 \section{Introduction}
@@ -38,32 +45,32 @@
 
 
 
-Circumbinary planets -- those orbiting two stars -- have been mostly found to orbit in the same plane as
-their hosts \citep{doyle2011,orosz2012,welsh2012}. However, \citet{aly2015} and \citet{martin2017} found that disks around eccentric binaries
-can evolve to a polar state if their inclination is perturbed from coplanar. A polar-aligned debris disk has been found in the 99 Her system
-\citep{kennedy2012} and polar-aligned gas disks have been found in the HD 98800 and V773 Tau systems \citep[respectively]{kennedy2019,kenworthy2022}.
+Observed circumbinary planets -- those orbiting around two stars -- have been mostly found to orbit in the same plane as
+their hosts \citep{doyle2011,orosz2012,welsh2012}. However, this is likely a result of selection effects \RGM{(citations by David Martin..)}.  Misaligned disks around eccentric binaries evolve \RGM{either to coplanar (citations)} to a polar state  \citep{aly2015,martin2017}. A polar-aligned debris disk has been found in the 99 Her system
+\citep{kennedy2012} and polar-aligned gas disks have been found in the HD 98800 \citep{kennedy2019} and V773 Tau systems \citep{kenworthy2022}.
 AC Her, a post-AGB system with a polar-inclined
-disk, is believed to host the first circumbinary planet found in a polar orbit \citep{martin2023}.
+disk, may host the first circumbinary planet found in a polar orbit \citep{hillen2015,anugu2023,martin2023}.
 
 
-The orbital parameters of these planets, and the disks that they form from, are determined from their interaction history with their
-host stars. These interactions can be broadly split into two categories:
+The alignment of circumbinary planets, and the alignment of the disks from which they form, are determined by their interaction history with their
+host stars. \RGM{For a massless} circumbinary disk, the type of nodal precession can be split into two categories:
 
 \begin{enumerate}
     \item {\bf Precession about the angular momentum vector of the binary.} In the case where the planet/disk
-        is slightly misaligend, its own angular momentum vector precesses about that of the binary \citep[e.g.,][]{bate2000,lubow2000}.
+        is slightly misalignend, its own angular momentum vector precesses about that of the binary \citep[e.g.,][]{bate2000,lubow2000}.
         This is characterized by near constant
         inclination and oscillation of the longitude of the ascending node. Included in this case is the subclassification
         of retrograde orbits (those whose angular momentum vectors are misaligend by $\sim 180 \deg$) and the two
         trivial cases of perfectly aligned/misaligend orbits which do not precess. \label{enum:precession}
     \item {\bf Libration about the eccentricity vector of the binary.} In the case where misalignment is high (i.e. near
-    perpendicular) the angular momentum of the planet/disk will librate about the eccentricity vector of the binary 
-    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. In this case the mutual inclination of the disk oscillates about the
-    polar configuration.
+    perpendicular) the angular momentum vector of the planet/disk precesses about the eccentricity vector of the binary 
+    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. This is called a librating orbit. In this case the mutual inclination of the disk oscillates about the polar configuration.
     \label{enum:libration}
 \end{enumerate}
 
-Planets form with orbital characteristics given by their progenitor disks \citep[e.g.,][]{childs2021}, so it is sufficient in this work to
+\RGM{However, for a massive disk, there are additional types of nodal precesion.... (describe) \citep{abod2022}.}
+
+Planets form with the orbital characteristics given by their progenitor disks \citep[e.g.,][]{childs2021}, so it is sufficient in this work to
 discuss disk dynamics only.
 Differential precession between adjacent annular regions in a disk cause dissipation, ultimately dampening precession or libration
 so that the disk reaches a steady state on its viscous timescale \citep[see also \citet{nixon2011,foucart2013,foucart2014}]{bate2000}.
@@ -80,7 +87,7 @@ as a function of two free parameters.
 
 In this work we will study the more general case of a massive disk. The resulting polar frequency function only contains one
 additional parameter, but the orbital parameters of the binary can now change due to interactions with the disk. The additional
-complications of this case require the application of numerical simulations; we use the N-body code REBOUND \citep{rebound} to simulate the
+complications of this case require the application of numerical simulations; we use the N-body code {\sc rebound} \citep{rebound} to simulate the
 dynamics of a three-body system, with a massive point particle used as a stand-in for the disk. \citet{abod2022} found that this 3-body
 setup is a valid description of a disk with angular momentum equal to that of the third body in the limit that the disk mass does not change
 (i.e. no accretion). This setup also cannot account for warping effects and disk breakage as we must treat the disk as a solid body. 
@@ -91,11 +98,57 @@ We describe this setup in detail in Section \ref{sec:methods}
 
 \section{Methods}
 \label{sec:methods}
-We use the N-body code \texttt{REBOUND} \citep{rebound} to simulate a 3-body system. The code used to run these simulations is publically
-available\footnote{\codeurl}.
+We describe two methods to approximate the evolution of a binary-disk system, each optimized for a different balance of computational cost and physical realism.
+First, we use the N-body code {\sc REBOUND} \citep{rebound} to simulate the disk using a point mass. The second method employs a Runge-Kutta-Fehlburg integrator to solve
+equations (7-10) from \citet{martin2019}. These equations treat the central binary in the quadrupole approximation, but can be solved extremely efficiently.
+The code used to run these simulations is publically available\footnote{\codeurl}.
 
-\subsection{Simulation Setup}
+\subsection{Geometric considerations}
 \label{subsec:setup}
+
+\begin{figure}
+    \begin{centering}
+        \includegraphics[width=0.5\textwidth]{figures/sim_example.pdf}
+        \caption{Example of system simulation and state determination. This figure tracks the orbital parameters
+        of a massless third body orbiting a $1 M_\odot$ binary with equal mass stars and $e_b = 0.4$.
+        Initially $\Omega = \frac{\pi}{2}$.
+        Solid lines indicate
+        the portion of the simulation that is required to determine the state. Dashed lines complete the evolution back to the system's
+        initial conditions but are not needed for our analysis. In general, we will only integrate until the state of the system can be
+        determined.}
+        \label{fig:sim_example}
+        \script{sim_example.py}
+    \end{centering}
+\end{figure}
+
+The dynamical state of the disk (i.e. prograde circulation, libration, etc.) is determined by tracking two relevant orbital elements:
+mutual inclination $i$ and longitude of ascending node $\Omega$. Each simulation method gives as an output the direction of the disk angular momentum relative to
+the binary $\bm{l}$. We define a coordinate system relative to the binary, with the $z$-axis to be along the
+angular momentum vector, the $x$-axis to be along the eccentricity vector, and the
+$y$-axis so that the coordinate system is right-handed.
+
+The relevant coordinates are then defined
+
+\begin{equation}
+    \cos{i} = \frac{\bm{l} \cdot \hat{\bm{z}}}{\|\bm l\|}
+    \label{eq:inclination}
+\end{equation}
+
+and
+
+\begin{equation}
+    \Omega = \arctantwo (\bm{l} \cdot \hat{\bm{x}}, -\bm{l} \cdot \hat{\bm{y}})
+    \label{eq:omega}
+\end{equation}
+
+Given some initial $(i,\Omega)$, the system can be evolved forward in time to recover the familiar diagram shown in Figure \ref{fig:sim_example}.
+\TJ{cite papers that have similar figures.}
+This visualiztaion also allows the dynamical state to be resolved programically, as a librating state will repeatedly cross the $y$-axis and never
+cross the $x$-axis, and a circulating state will sequentially cross each axis in an order that can determine if it is prograde or retrograde.
+
+
+\subsection{Using {\sc REBOUND}}
+\label{subsec:reb}
 
 \begin{table*}
     \begin{tabular}{cccp{0.5\textwidth}}
@@ -116,76 +169,61 @@ available\footnote{\codeurl}.
         \texttt{arg\_pariapsis\_planet} & $\omega$ & \texttt{float} & The argument of pariapsis of the third body's orbit. \\
         \hline
     \end{tabular}
-    \caption{Simulation parameters}
+    \caption{ {\sc REBOUND} Simulation parameters}
     \label{tab:params}
 \end{table*}
 
-We use \texttt{REBOUND}'s Python interface to initialize our simulation. Table \ref{tab:params} describes the simulation's
-input parameters. We then integrate the system using the IAS15 15th order Gauss-Radau integrator \citep{reboundias15}
+We use {\sc REBOUND}'s Python interface to initialize our simulation. Table \ref{tab:params} describes the simulation's
+input parameters. We integrate the system using the IAS15 15th order Gauss-Radau integrator \citep{reboundias15}
 until we can determine the system's state.
 
-\subsubsection{Determining the state}
-\label{subsubsec:state}
-We integrate the system 5 (third-body) orbits at a time, capturing the positions and velocities of each particle afterwards.
-Between each step we attempt to assign an end-state to the system. This is done by computing $i$ and $\Omega$ and checking them against
-two criteria:
-\begin{enumerate}
-    \item Has $\Delta\Omega$ changed sign? In a precessing orbit $\Omega$ changes monotonically. If 
-    $\frac{d\Omega}{dt}$ changes from positive to negative (or vise-versa) then we can be sure we have found a librating state.
-    \label{item:omega}
-    \item Has $i~\sin{\Omega}$ crossed zero? In a librating state this quantity will never change sign. 
-    \label{item:sign}
-\end{enumerate}
- Determining the state is done iteratively and only requires that $i$ and $\Omega$
-be known at each timestep. If neither criteria are true then we do not yet have enough information, and we continue the integration.
-If criterion \ref{item:omega} is true then the system is librating. If criterion \ref{item:sign} is true then the system is precessing.
-There is no know configuration that would allow both criteria to be true.
+Not much can be learned from a single simulation as it only allows us to map from one point in $(i,\Omega)$ space to an end state. To infer the behavior of a population
+(and from that compute a polar fraction) we employ a Monte Carlo (MC) method, sampling isotropically on the $(i,\Omega)$ sphere. That is, $\Omega \in \mathcal{U}(0,2\pi)$
+and $i \in \{\arcsin{(2u-1)} + \frac{\pi}{2} \mid u \in \mathcal{U}(0,1)\}$.
 
-In order to compute $i$ and $\Omega$ we must first define a coordinate system. \texttt{REBOUND} outputs the positions and
-velocities of each particle in the center-of-mass frame. We then use the binary to define a time-dependent coordinate system.
-We define the z-axis to be along the angular momentum vector of the binary, the x-axis to be along the eccentricity vector, and the
-y-axis so that the coordinate system is right-handed.
+\begin{figure*}
+    \begin{centering}
+        \includegraphics[width=\textwidth]{figures/mc_example.pdf}
+        \caption{Monte Carlo results for a $1 M_\odot$ equal mass binary with $e_b=0.4$ for $j=0,0.5,1$. The position of each
+        point shows the initial condition of the simulation, and the color denotes the dynamical state. Note that some are marked
+        as ``unknown''. This is because we set a 1000 orbit limit on the integration for the sake of computational time.}
+        \script{mc_example.py}
+        \label{fig:mc}
+    \end{centering}
+\end{figure*}
 
-\begin{equation}
-\begin{aligned}
-    \hat{z} & = \vec{L}/\|\vec{L}\| \\
-    \hat{x} & = \vec{e}/\|\vec{e}\| \\
-    \hat{y} & = - \hat{x} \times \hat{z}
-    \label{eq:coords}
-\end{aligned}
-\end{equation}
+Each MC run is initialized with the conditions of the binary as well as the angular momentum of the disk. We then sample $i$ and $\Omega$ in batches of four simulations,
+using a bootstrap metric after each batch to compute the polar fraction. Sampling stops when the bootstrap-computed confidence interval reaches a prescribed value. A 
+typical simulation takes on the order of $0.1-1$ s, so we save the results of each simulation in an SQLite database between batches. When an MC sampler is initialized
+it queries this database for all relevant passed simulations, ingests them, and only runs new simulations if a more stringent confidence interval is requested.
 
-We can then compute $i$ and $\Omega$ from the specific angular momentum $\vec{h}$.
+\subsection{Runge-Kutta-Fehlburg method}
+\label{subsec:rk}
 
-\begin{equation}
-    \cos{i} = \frac{\vec{h} \cdot \hat{z}}{\|\vec{h}\|}
-    \label{eq:inclination}
-\end{equation}
+In addition to using {\sc REBOUND} in Section \ref{subsec:reb} we can solve the same problem using a slightly more analytical approach. \citet{martin2019} found
+a set of first-order differential equations (their Equations 7-10) based on previous work by \citet{farago2010} that describes the coupled behavior of the
+disk angular momentum direction and the binary eccentricity. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar
+to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. The cost of this method is that it treats
+the binary in the quadrupole approximation, meaning we are not sensitive to the effects of the binary mass fraction, but the computational cost is extremely low; we are
+able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than {\sc REBOUND}.
 
-\begin{equation}
-    \Omega = \arctantwo (\vec{h} \cdot \hat{x}, -\vec{h} \cdot \hat{y})
-    \label{eq:omega}
-\end{equation}
+The added computational efficiency means this method is not restricted to an MC method with hundreds of samples; we can compute a grid of $\sim 10^6$ in
+less than a minute to get a very accurate measure of the polar fraction.
 
 \begin{figure}
     \begin{centering}
-        \includegraphics{figures/sim_example.pdf}
-        \caption{Example of system simulation and state determination. This figure tracks the orbital parameters
-        of a massless third body orbiting a $1 M_\odot$ binary with equal mass stars and $e_b = 0.4$.
-        Initially $\Omega = \frac{\pi}{2}$.
-        Solid lines indicate
-        the portion of the simulation that is required to determine the state. Dashed lines complete the evolution back to the system's
-        initial conditions but are not needed for our analysis. In general, we will only integrate until the state of the system can be
-        determined.}
-        \label{fig:sim_example}
-        \script{sim_example.py}
+        \includegraphics[width=0.5\textwidth]{figures/compare_massive.pdf}
+        \caption{
+            Contour lines denoting solution boundaries found via the RKF method compared to MC results of the same conditions. Binary setup is the same
+            as in Figure \ref{fig:mc}, but for $j=0.66$, which is its critical value \citep[see][]{martin2019,abod2022}. The grid here includes 250,000 points.
+            There is some disagreement between RKF and {\sc REBOUND}, which we attribute to misclassification due to behavior on the orbital timescale (i.e. 
+            small variations in $\Omega$ that cause the simulation to temporarily cross the $y$-axis twice, giving the false appearance of libration). \TJ{We can fix this}
+        }
+        \script{compare_massive.py}
+        \label{fig:rkf}
     \end{centering}
 \end{figure}
 
-Figure \ref{fig:sim_example} shows a set of example simulations along with their determined states. Visualizing the 
-system in this way makes it clear why we have chosen our two criteria. Librating orbits will never cross the x-axis
-and will cause the polar angle ($\Omega$) to turn back before reaching $0$ or $\pi$. Precessing orbits (both prograde and retrograde)
-travel approximately in circles with near-constant $i$.
 
 \section{Results}
 \label{sec:results}
@@ -209,7 +247,6 @@ reproducible. The source code to compile this document and create the figures is
 Simulations in this paper made use of the REBOUND N-body code \citep{rebound}.
 The simulations were integrated using IAS15, a 15th order Gauss-Radau integrator \citep{reboundias15}. 
 
-[\textcolor{red}{Cherry Creek}]
 
 \bibliography{cbdisk,syw,reb}
 

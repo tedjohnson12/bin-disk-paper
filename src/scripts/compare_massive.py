@@ -1,0 +1,271 @@
+"""
+Compare the phase diagram for the massless case to that of the massive case.
+"""
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+from tqdm.auto import tqdm
+
+import paths
+import helpers
+import colors
+
+from polar_disk_freq import system, mc, search
+from polar_disk_freq.utils import STATE_LONG_NAMES
+from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma
+
+plt.style.use('bmh')
+
+color = {
+    system.UNKNOWN : colors.brown,
+    system.PROGRADE: colors.yellow,
+    system.RETROGRADE: colors.dark_orange,
+    system.LIBRATING: colors.teal
+}
+
+OUTFILE = paths.figures / 'compare_massive.pdf'
+DB_PATH = paths.data / 'mc.db'
+
+MASS_BINARY = 1
+FRAC_BINARY = 0.5
+SEP_BINARY = 0.2
+ECC_BIN = 0.4
+SEP_PLANET = 5*SEP_BINARY
+JCRIT = helpers.j_critical(ECC_BIN)
+J = JCRIT
+ECC_PLANET = 0
+
+MASS_PLANET = helpers.get_mass_planet(
+    _j=J,
+    m_bin=MASS_BINARY,
+    f_bin=FRAC_BINARY,
+    e_bin=ECC_BIN,
+    a_bin=SEP_BINARY,
+    a_planet=SEP_PLANET,
+    e_planet=ECC_PLANET
+)
+NU = 0
+ARG_PARIAPSIS = 0
+GR = False
+
+
+N_ANALYTIC = 1000
+SEARCH_PRECISION = np.pi / 180 * 0.5 * 5 # 5 degree
+CONFIDENCE_INTERVAL_WIDTH = 0.1
+CONFIDENCE_LEVEL = 0.95
+
+def get_sampler(ecc: float, _mass: float)->mc.Sampler:
+    """
+    Get a sampler for a given eccentricity and mass.
+    
+    Parameters
+    ----------
+    ecc : float
+        The eccentricity of the binary.
+    _mass : float
+        The mass of the planet.
+    
+    Returns
+    -------
+    sampler : mc.Sampler
+        The monte carlo sampler.
+    """
+    return mc.Sampler(
+        mass_binary=MASS_BINARY,
+        mass_fraction=FRAC_BINARY,
+        semimajor_axis_binary=SEP_BINARY,
+        eccentricity_binary=ecc,
+        mass_planet=_mass,
+        semimajor_axis_planet=SEP_PLANET,
+        true_anomaly_planet=NU,
+        eccentricity_planet=ECC_PLANET,
+        arg_pariapsis_planet=ARG_PARIAPSIS,
+        gr=GR,
+        rng=None,
+        db_path=DB_PATH
+    )
+
+def do_mc(ecc: float, _mass: float):
+    """
+    Run a monte carlo simulation for a given eccentricity.
+
+    Parameters
+    ----------
+    ecc : float
+        The eccentricity of the binary.
+    mass : float
+        The mass of the planet.
+
+    Returns
+    -------
+    low : float
+        The lower end of the confidence interval.
+    high : float
+        The upper end of the confidence interval.
+    """
+    _sampler = get_sampler(ecc, _mass)
+    _sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=20)
+    result = _sampler.bootstrap(
+        system.LIBRATING, confidence_level=CONFIDENCE_LEVEL)
+    return result.confidence_interval.low, result.confidence_interval.high
+
+def do_search(ecc:float, _mass: float):
+    """
+    Do a binary search for a given eccentricity.
+    
+    Parameters
+    ----------
+    ecc : float
+        The eccentricity of the binary.
+    
+    Returns
+    -------
+    transitions : list
+        The list of transitions.
+    """
+    _searcher = search.Searcher(
+        mass_binary=MASS_BINARY,
+        mass_fraction=FRAC_BINARY,
+        semimajor_axis_binary=SEP_BINARY,
+        eccentricity_binary=ecc,
+        mass_planet=_mass,
+        semimajor_axis_planet=SEP_PLANET,
+        true_anomaly_planet=NU,
+        eccentricity_planet=ECC_PLANET,
+        arg_pariapsis_planet=ARG_PARIAPSIS,
+        lon_ascending_node_planet=np.pi/2,
+        precision=SEARCH_PRECISION,
+        gr=GR,
+        db_path=DB_PATH
+    )
+    _searcher._integration_max_orbits = 10000
+    _transitions = _searcher.search()
+    return _transitions
+
+def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float):
+    """
+    Plot the full path for a particular setup.
+    
+    Parameters
+    ----------
+    _ax : plt.Axes
+        The axes to plot on.
+    ecc : float
+        The eccentricity of the binary.
+    inclination : float
+        The initial inclination of the planet.
+    _mass : float
+        The mass of the planet.
+    """
+    sys = system.System.from_params(
+        mass_binary=MASS_BINARY,
+        mass_fraction=FRAC_BINARY,
+        semimajor_axis_binary=SEP_BINARY,
+        eccentricity_binary=ecc,
+        mass_planet=_mass,
+        semimajor_axis_planet=SEP_PLANET,
+        inclination_planet=inclination,
+        lon_ascending_node_planet=np.pi/2,
+        true_anomaly_planet=NU,
+        eccentricity_planet=ECC_PLANET,
+        arg_pariapsis_planet=ARG_PARIAPSIS,
+        gr=GR,
+        sim=None
+    )
+    sys.integrate_to_get_path(step=5,max_orbits=10000,capture_freq=1)
+    incls = sys.inclination
+    lon_asc_node = sys.lon_ascending_node
+    x = incls*np.cos(lon_asc_node)
+    y = incls*np.sin(lon_asc_node)
+    state = sys.state
+    ls = '-' if _mass == 0 else '--'
+    _ax.plot(x,y, c=color[state], lw=1,ls=ls)
+
+def plot_scatter(_ax: plt.Axes,_sampler: mc.Sampler):
+    """
+    Make a scatter plot from the monte carlo sampler.
+    
+    Parameters
+    ----------
+    _ax : plt.Axes
+        The axes to plot on.
+    sampler : mc.Sampler
+        The monte carlo sampler.
+    """
+    lon_asc_node = np.array(_sampler.lon_ascending_nodes)
+    incl = np.array(_sampler.inclinations)
+    states = np.array(_sampler.states)
+    x = incl*np.cos(lon_asc_node)
+    y = incl*np.sin(lon_asc_node)
+    for state in [system.LIBRATING, system.RETROGRADE, system.PROGRADE, system.UNKNOWN]:
+        _ax.scatter(lon_asc_node[states==state], incl[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
+
+if __name__ in '__main__':
+    fig = plt.figure(figsize=(4,5))
+    extent = [0.2,0.3,0.7,0.6]
+    ax_cartesian: plt.Axes = fig.add_axes(extent)
+    # ax_cartesian.patch.set_alpha(0.0)
+    ax_polar = fig.add_axes(extent,projection='polar',frameon=False)
+    ax_polar.patch.set_agg_filter(0.0)
+    fig.subplots_adjust(left=0.15,right=0.6)
+    sampler = get_sampler(ECC_BIN, MASS_PLANET)
+    sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=4,confidence_level=CONFIDENCE_LEVEL)
+    plot_scatter(ax_polar,sampler)
+    # transitions = do_search(ECC_BIN,_mass=0)
+    # for transition in transitions:
+    #     for i in [transition.low_value, transition.high_value]:
+    #         plot_full(ax,ECC_BIN,i,0)
+    #         if system.LIBRATING in [transition.low_state, transition.high_state]:
+    #             plot_full(ax,ECC_BIN,-i,0)
+    # transitions = do_search(ECC_BIN,_mass=MASS_PLANET)
+    # for transition in transitions:
+    #     for i in [transition.low_value, transition.high_value]:
+    #         plot_full(ax,ECC_BIN,i,MASS_PLANET)
+    #         if system.LIBRATING in [transition.low_state, transition.high_state]:
+    #             plot_full(ax,ECC_BIN,-i,MASS_PLANET)
+    print(sampler.bootstrap(system.LIBRATING))
+    # ax.set_xlim(-np.pi*1.05,np.pi*1.05)
+    # ax.set_ylim(-np.pi*1.05,np.pi*1.05)
+    ax_polar.set_aspect('equal')
+    ax_cartesian.set_xlabel('$i~\\cos{\\Omega}$',fontsize=12)
+    ax_cartesian.set_ylabel('$i~\\sin{\\Omega}$',fontsize=12)
+    ax_cartesian.set_xlim(-np.pi,np.pi)
+    ax_cartesian.set_ylim(-np.pi,np.pi)
+    ax_cartesian.set_aspect('equal')
+    ax_cartesian.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
+    ax_cartesian.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
+    ax_cartesian.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
+    ax_cartesian.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
+    ax_polar.legend(fontsize=12,loc=(0.25,-0.55))
+    ax_polar.set_xticks([])
+    ax_polar.set_yticks([])
+    # ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
+    # ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
+    # plt.tick_params(labelsize=24)
+    ax_cartesian.text(0.9*np.pi,1.15*np.pi,f'$j={helpers.represent_j(J)}$',ha='right',va='top',fontsize=12)
+    
+    
+    n = 500
+    m = 500
+    i_arr = np.linspace(0,np.pi,n,endpoint=False)
+    omega_arr = np.linspace(0,2*np.pi,m)
+    state_arr = np.zeros((n,m),dtype=int)
+    gamma = get_gamma(ECC_BIN,J)
+    state_mapper = {
+        'u':0,
+        'p':1,
+        'l':2,
+        'r':3
+    }
+    for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
+        for _m, omega in enumerate(omega_arr):
+            x,y,z = init_xyz(i,omega)
+            _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
+            state_arr[_n,_m] = state_mapper[state]
+    
+    ax_polar.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
+    
+    
+    fig.savefig(OUTFILE)
+

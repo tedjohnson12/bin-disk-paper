@@ -11,7 +11,7 @@ dag:
     width: '1'
   render: false
 datasets:
-  10.5072/zenodo.49050:
+  10.5072/zenodo.68414:
     contents:
       mc.db: src/data/mc.db
 dependencies:

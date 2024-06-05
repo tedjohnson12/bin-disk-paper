@@ -15,7 +15,9 @@ datasets:
     contents:
       mc.db: src/data/mc.db
 dependencies:
-  src/scripts/compare_j.py:
+  src/scripts/compare_massive.py:
+  - src/data/mc.db
+  src/scripts/mc_example.py
   - src/data/mc.db
 ms_name: ms
 optimize_caching: false

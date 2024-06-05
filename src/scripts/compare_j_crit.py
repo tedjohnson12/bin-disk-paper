@@ -13,7 +13,7 @@ import colors
 import helpers
 
 DB_PATH = paths.data / 'mc.db'
-OUTFILE = paths.figures / 'compare_j.pdf'
+OUTFILE = paths.figures / 'compare_j_critt.pdf'
 
 MASS_BINARY = 1
 FRAC_BINARY = 0.5
@@ -25,15 +25,15 @@ ARG_PARIAPSIS = 0
 GR = False
 
 N_ANALYTIC = 1000
-CONFIDENCE_INTERVAL_WIDTH = 0.15
+CONFIDENCE_INTERVAL_WIDTH = 0.2
 CONFIDENCE_LEVEL = 0.68
 
-ECCENTRICITIES = [0.1,0.2,0.3,0.4, 0.5,0.6, 0.7,0.8,0.9]
+ECCENTRICITIES = [0.1,0.3, 0.5, 0.7,0.9]
 ECCENTRICITIES_ANALYTIC = np.linspace(0, 1, 100)
-JS = [0.01,0.1,0.5, 1, 2]
+J_FRAC = [0.01,0.1,0.5,1,1.5]
 # CMAP = plt.get_cmap('winter')
 CMAP = colors.cm_teal_cream_orange
-COLORS = CMAP(np.linspace(0, 1, len(JS)))
+COLORS = CMAP(np.linspace(0, 1, len(J_FRAC)))
 
 def do_mc(e_bin: float, _j: float) -> tuple[float, float]:
     """
@@ -76,6 +76,7 @@ def do_mc(e_bin: float, _j: float) -> tuple[float, float]:
         rng=None,
         db_path=DB_PATH
     )
+    sampler._integration_max_orbits = 10000
     sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=4)
     result = sampler.bootstrap(
         system.LIBRATING, confidence_level=CONFIDENCE_LEVEL)
@@ -96,7 +97,7 @@ def plot_analytic(_ax: plt.Axes):
              c=colors.yellow, label=Zanazzi2018.citet)
 
 
-def plot_mc(_ax: plt.Axes, _j: float, _color: str):
+def plot_mc(_ax: plt.Axes, _j_frac: float, _color: str):
     """
     Plot the monte carlo solution.
 
@@ -113,6 +114,7 @@ def plot_mc(_ax: plt.Axes, _j: float, _color: str):
     highs = []
     for ecc in ECCENTRICITIES:
         print(f'Using eccentricity {ecc}')
+        _j = _j_frac * helpers.j_critical(ecc)
         low, high = do_mc(ecc, _j)
         lows.append(low)
         highs.append(high)
@@ -120,7 +122,7 @@ def plot_mc(_ax: plt.Axes, _j: float, _color: str):
     highs = np.array(highs)
     mid = (lows+highs)/2
     _ax.errorbar(ECCENTRICITIES, mid, yerr=(highs-lows)/2, fmt='.', c=_color,
-                 label=f'$j={helpers.represent_j(_j)}$', markersize=10, zorder=90)
+                 label=f'$\\frac{{j}}{{j_{{crit}}}} = {_j_frac:.2f}$', markersize=10, zorder=90)
 
 
 if __name__ in '__main__':
@@ -128,9 +130,9 @@ if __name__ in '__main__':
     fig.subplots_adjust(right=0.7)
     ax: plt.Axes
     plot_analytic(ax)
-    for j, color in zip(JS, COLORS):
-        print(f'Running Monte Carlo for j={j}')
-        plot_mc(ax, j, color)
+    for j_frac, color in zip(J_FRAC, COLORS):
+        print(f'Running Monte Carlo for j={j_frac}')
+        plot_mc(ax, j_frac, color)
     ax.set_xlabel('Binary Eccentricity')
     ax.set_ylabel('Polar Fraction')
     ax.set_xlim(0, 1)

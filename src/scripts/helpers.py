@@ -73,6 +73,8 @@ def get_mass_planet(
 
     """
     # From 2022MNRAS.517..732A eq 1,2,3
+    if _j == 0:
+        return 0
     a = 1
     b = m_bin
     c = 0
@@ -84,7 +86,42 @@ def get_mass_planet(
     return roots[0]
 
 # # Mdisk = 0.1Mb
-# def get_a_planet()
+def get_a_planet(_j: float,
+        m_bin: float,
+        f_bin: float,
+        e_bin: float,
+        a_bin: float,
+        m_planet: float,
+        e_planet: float
+    ) -> float:
+    """
+    Get the semimajor axis of the planet given the binary eccentricity and the relative angular momentum.
+    
+    Parameters
+    ----------
+    _j : float
+        The relative angular momentum.
+    m_bin : float
+        Binary mass.
+    f_bin : float
+        Binary mass fraction :math:`M_2/M`.
+    e_bin : float
+        Binary eccentricity.
+    a_bin : float
+        Binary semimajor axis.
+    m_planet : float
+        Planet mass.
+    e_planet : float
+        Planet eccentricity.
+    
+    Returns
+    -------
+    float
+        The semimajor axis of the planet.
+    """
+    numerator = _j**2 * f_bin**2 * (1-f_bin)**2 * (1-e_bin**2)/(1-e_planet**2)
+    denominator = m_planet/m_bin * (1+m_planet/m_bin)
+    return a_bin * numerator/denominator
 
 
 def represent_j(_j: float) -> str:
@@ -101,7 +138,7 @@ def represent_j(_j: float) -> str:
     str
         The string representation of the relative angular momentum.
     """
-    is_small = _j < 0.1
+    is_small = _j < 0.01
     if is_small:
         is_power_of_ten = np.log10(_j) % 1 == 0
         if is_power_of_ten:
@@ -118,6 +155,25 @@ def represent_j(_j: float) -> str:
                 return f'{_j:.1f}'
             else:
                 return f'{_j:.2f}'
+
+def j_critical(e_bin: float) -> float:
+    """
+    Calculate the critical relative angular momentum.
+    From Martin & Lubow 2019
+    
+    Parameters
+    ----------
+    e_bin : float
+        Binary eccentricity.
+    
+    Returns
+    -------
+    float
+        The critical relative angular momentum.
+    """
+    num = 1 + 4*e_bin**2
+    den = 2 + 3*e_bin**2
+    return num/den
 
 if __name__ == "__main__":
     print(get_mass_planet(

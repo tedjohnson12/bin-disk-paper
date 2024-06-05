@@ -15,8 +15,6 @@ from polar_disk_freq import system, mc, search
 from polar_disk_freq.utils import STATE_LONG_NAMES
 from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma
 
-plt.style.use('bmh')
-
 color = {
     system.UNKNOWN : colors.brown,
     system.PROGRADE: colors.yellow,
@@ -24,7 +22,9 @@ color = {
     system.LIBRATING: colors.teal
 }
 
-OUTFILE = paths.figures / 'compare_massive.pdf'
+plt.style.use('bmh')
+
+OUTFILE = paths.figures / 'mc_example.pdf'
 DB_PATH = paths.data / 'mc.db'
 
 MASS_BINARY = 1
@@ -33,18 +33,9 @@ SEP_BINARY = 0.2
 ECC_BIN = 0.4
 SEP_PLANET = 5*SEP_BINARY
 JCRIT = helpers.j_critical(ECC_BIN)
-J = JCRIT
+J = 0
 ECC_PLANET = 0
 
-MASS_PLANET = helpers.get_mass_planet(
-    _j=J,
-    m_bin=MASS_BINARY,
-    f_bin=FRAC_BINARY,
-    e_bin=ECC_BIN,
-    a_bin=SEP_BINARY,
-    a_planet=SEP_PLANET,
-    e_planet=ECC_PLANET
-)
 NU = 0
 ARG_PARIAPSIS = 0
 GR = False
@@ -55,7 +46,7 @@ SEARCH_PRECISION = np.pi / 180 * 0.5 * 5 # 5 degree
 CONFIDENCE_INTERVAL_WIDTH = 0.1
 CONFIDENCE_LEVEL = 0.95
 
-def get_sampler(ecc: float, _mass: float)->mc.Sampler:
+def get_sampler(ecc: float, _j: float)->mc.Sampler:
     """
     Get a sampler for a given eccentricity and mass.
     
@@ -71,12 +62,21 @@ def get_sampler(ecc: float, _mass: float)->mc.Sampler:
     sampler : mc.Sampler
         The monte carlo sampler.
     """
+    mass = helpers.get_mass_planet(
+        _j=_j,
+        m_bin=MASS_BINARY,
+        f_bin=FRAC_BINARY,
+        e_bin=ECC_BIN,
+        a_bin=SEP_BINARY,
+        a_planet=SEP_PLANET,
+        e_planet=ECC_PLANET
+    )
     return mc.Sampler(
         mass_binary=MASS_BINARY,
         mass_fraction=FRAC_BINARY,
         semimajor_axis_binary=SEP_BINARY,
         eccentricity_binary=ecc,
-        mass_planet=_mass,
+        mass_planet=mass,
         semimajor_axis_planet=SEP_PLANET,
         true_anomaly_planet=NU,
         eccentricity_planet=ECC_PLANET,
@@ -199,73 +199,56 @@ def plot_scatter(_ax: plt.Axes,_sampler: mc.Sampler):
     x = incl*np.cos(lon_asc_node)
     y = incl*np.sin(lon_asc_node)
     for state in [system.LIBRATING, system.RETROGRADE, system.PROGRADE, system.UNKNOWN]:
-        _ax.scatter(lon_asc_node[states==state], incl[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
+        _ax.scatter(x[states==state], y[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
 
 if __name__ in '__main__':
-    fig = plt.figure(figsize=(4,5))
-    extent = [0.2,0.3,0.7,0.6]
-    ax_cartesian: plt.Axes = fig.add_axes(extent)
-    # ax_cartesian.patch.set_alpha(0.0)
-    ax_polar = fig.add_axes(extent,projection='polar',frameon=False)
-    ax_polar.patch.set_agg_filter(0.0)
-    fig.subplots_adjust(left=0.15,right=0.6)
-    sampler = get_sampler(ECC_BIN, MASS_PLANET)
-    sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=4,confidence_level=CONFIDENCE_LEVEL)
-    plot_scatter(ax_polar,sampler)
-    # transitions = do_search(ECC_BIN,_mass=0)
-    # for transition in transitions:
-    #     for i in [transition.low_value, transition.high_value]:
-    #         plot_full(ax,ECC_BIN,i,0)
-    #         if system.LIBRATING in [transition.low_state, transition.high_state]:
-    #             plot_full(ax,ECC_BIN,-i,0)
-    # transitions = do_search(ECC_BIN,_mass=MASS_PLANET)
-    # for transition in transitions:
-    #     for i in [transition.low_value, transition.high_value]:
-    #         plot_full(ax,ECC_BIN,i,MASS_PLANET)
-    #         if system.LIBRATING in [transition.low_state, transition.high_state]:
-    #             plot_full(ax,ECC_BIN,-i,MASS_PLANET)
-    print(sampler.bootstrap(system.LIBRATING))
-    # ax.set_xlim(-np.pi*1.05,np.pi*1.05)
-    # ax.set_ylim(-np.pi*1.05,np.pi*1.05)
-    ax_polar.set_aspect('equal')
-    ax_cartesian.set_xlabel('$i~\\cos{\\Omega}$',fontsize=12)
-    ax_cartesian.set_ylabel('$i~\\sin{\\Omega}$',fontsize=12)
-    ax_cartesian.set_xlim(-np.pi,np.pi)
-    ax_cartesian.set_ylim(-np.pi,np.pi)
-    ax_cartesian.set_aspect('equal')
-    ax_cartesian.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
-    ax_cartesian.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
-    ax_cartesian.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
-    ax_cartesian.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
-    ax_polar.legend(fontsize=12,loc=(0.25,-0.55))
-    ax_polar.set_xticks([])
-    ax_polar.set_yticks([])
-    # ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
-    # ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=24)
-    # plt.tick_params(labelsize=24)
-    ax_cartesian.text(0.9*np.pi,1.15*np.pi,f'$j={helpers.represent_j(J)}$',ha='right',va='top',fontsize=12)
+    fig = plt.figure(figsize=(8,8))
+    ax1 = fig.add_subplot(2,2,1)
+    ax2 = fig.add_subplot(2,2,3)
+    ax3 = fig.add_subplot(2,2,4)
+    # fig.subplots_adjust(left=0.15,right=0.6)
+    
+    for i,(j,_ax) in enumerate(zip([0,0.5,1.0],[ax1,ax2,ax3])):
+        sampler = get_sampler(ECC_BIN, j)
+        sampler.sim_until_precision(CONFIDENCE_INTERVAL_WIDTH, batch_size=4,confidence_level=CONFIDENCE_LEVEL)
+        plot_scatter(_ax,sampler)
+    
+        print(sampler.bootstrap(system.LIBRATING))
+        _ax.set_aspect('equal')
+        _ax.set_xlabel('$i~\\cos{\\Omega}$',fontsize=12)
+        _ax.set_ylabel('$i~\\sin{\\Omega}$',fontsize=12)
+        if i==0:
+            _ax.legend(fontsize=12,loc=(1.2,0.2))
+        _ax.set_xlim(-np.pi,np.pi)
+        _ax.set_ylim(-np.pi,np.pi)
+        _ax.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
+        _ax.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
+        _ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
+        _ax.set_yticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)
+        _ax.text(0.8*np.pi,1.15*np.pi,f'$j={helpers.represent_j(j)}$',ha='right',va='top',fontsize=12)
     
     
-    n = 500
-    m = 500
-    i_arr = np.linspace(0,np.pi,n,endpoint=False)
-    omega_arr = np.linspace(0,2*np.pi,m)
-    state_arr = np.zeros((n,m),dtype=int)
-    gamma = get_gamma(ECC_BIN,J)
-    state_mapper = {
-        'u':0,
-        'p':1,
-        'l':2,
-        'r':3
-    }
-    for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
-        for _m, omega in enumerate(omega_arr):
-            x,y,z = init_xyz(i,omega)
-            _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
-            state_arr[_n,_m] = state_mapper[state]
+    # n = 1000
+    # m = 1000
+    # i_arr = np.linspace(0,np.pi,n)
+    # omega_arr = np.linspace(0,2*np.pi,m)
+    # state_arr = np.zeros((n,m),dtype=int)
+    # gamma = get_gamma(ECC_BIN,J)
+    # state_mapper = {
+    #     'u':0,
+    #     'p':1,
+    #     'l':2,
+    #     'r':3
+    # }
+    # for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
+    #     for _m, omega in enumerate(omega_arr):
+    #         x,y,z = init_xyz(i,omega)
+    #         _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
+    #         state_arr[_n,_m] = state_mapper[state]
     
-    ax_polar.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
+    # ax.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
     
+    fig.tight_layout()
     
     fig.savefig(OUTFILE)
 

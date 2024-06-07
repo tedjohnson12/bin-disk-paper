@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-from misaligned_cb_disk import params, system
+from polar_disk_freq import params, system
 import rebound
 
 import paths

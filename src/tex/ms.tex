@@ -226,9 +226,126 @@ less than a minute to get a very accurate measure of the polar fraction.
     \end{centering}
 \end{figure}
 
+\subsection{Analytic treatment}
+\label{subsec:analytic}
+
+\citet{martin2019} give two conditions for libration, each valid for a different regime of constant of motion $\chi$ (see their Equations 31, 32, 38).
+\TJ{(Would it be helpful to define $\chi$?)}
+These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
+\begin{equation}
+    \label{eq:omega_min}
+    \begin{aligned}
+        \sin^2{\Omega_{\rm min}} & = \frac{(1-e_{\rm b}^2) (2j + \cos^2{i})}{5 e_{\rm b}^2 \sin^2{i}} & \text{if} ~\chi \ge 0 \\
+    & = \frac{2}{5 \sin^2{i}} + \frac{\cos{i}}{5j \sin^2{i}} - \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2) \sin^2{i}} & \text{if} ~\chi < 0
+    \end{aligned}
+\end{equation}
+
+The range of $\sin^2{\Omega_{\rm min}}$ being $[0,1]$ there exists some $i_{\rm crit}$ below which all orbits circulate. In the $\chi \ge 0$ case
+this satisfies the equation
+\begin{equation}
+    \label{eq:icrit1}
+    \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0
+\end{equation}
+
+And in the $\chi < 0$ case $i_{\rm crit}$ satisfies
+\begin{equation}
+    \label{eq:icrit2}
+    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0
+\end{equation}
+
+Such that if the LHS of Equation \ref{eq:icrit1} or \ref{eq:icrit2} (depending on the value of $\chi$) evaluate to $<0$ then only circulating orbits are allowed.
+
+We can define a function to describe the probability of a polar orbit given the assumption that $\Omega$ is randomly distributed.
+\begin{equation}
+    \begin{aligned}
+        P(j,e_{\rm b}, i) & = 1 - \frac{2}{\pi} \Omega_{\rm min} & \text{if} ~i > i_{\rm crit} \\
+        & = 0 & \text{if} ~i \le i_{\rm crit}
+    \end{aligned}
+\end{equation}
+
+From which the fraction of total polar orbits can be calculated
+\begin{equation}
+    \label{eq:fp_int}
+    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\, dj\,de_{\rm b}\,di
+\end{equation}
+
+This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized.
+For example, an isotropic distribution of disks would require we replace $di$ with $\frac{1}{2}\sin{u}\,du$ for $u \in [0,\pi]$.
+
+\subsubsection{High-$j$ limit}
+\label{subsubsec:hi_j}
+When $j$ is very large, the $\chi < 0$ branch of Equation \ref{eq:omega_min} becomes
+\begin{equation}
+    \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}
+\end{equation}
+
+which has no dependence on the disk angular momentum or on the binary eccentricity. We can then find that the polar fraction in this limit is
+\begin{equation}
+    f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
+\end{equation}
+
+This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$.
+
 
 \section{Results}
 \label{sec:results}
+
+To determine the polar fraction of a given population we must consider three distributions:
+\begin{enumerate}
+    \item The direction of disk angular momentum $\bm{l}$ \label{it:l} \\
+    \item The scalar relative disk angular momentum $j$ \label{it:j} \\
+    \item The binary eccentricity $e_{\rm b}$ \label{it:eb}
+\end{enumerate}
+
+In Section \ref{sec:methods} we made the simplifying assumption that $\bm{l}$ is isotropic. Note that this is in contrast to the exponential distribution in
+mutual inclination employed by \citet{ceppi2024}. The decaying exponential prefers disks that are aligned with the binary -- valid in the wide-binary regime, but
+hydrodynamic simulations by \citep{elsender2023} found that for binaries with separations on the order of 1 AU that mutual inclinations are seemingly randomly
+distributed between $0$ and $\pi$. % See their fig 8
+
+\begin{figure*}
+    \begin{centering}
+        \includegraphics[width=1\textwidth]{figures/compare_ebin.pdf}
+        \caption{
+            Polar fraction as a function of $e_{\rm b}$ for various values of $j$. Each fraction is calculated using a $100\times 100$ grid of RKF integrations.
+            The dashed lines shows the analytic solution for a massless disk from \citet{zanazzi2018} (in yellow) and from \citet{martin2019} (in gray), integrated numerically.
+            There are two competing effects here:
+            In the low-$j$ regime the polar fraction is a strong function of $e_{\rm b}$. However, as $j$ increases, $f_{\rm polar}$ is only sensitive to eccentricity
+            when $e_{\rm b} \sim 1$, and otherwise prefers a flat distribution.
+        }
+        \script{compare_ebin.py}
+        \label{fig:ebin}
+    \end{centering}
+\end{figure*}
+
+First, let's not consider the other two distributions, and leave $j$ and $e_{\rm b}$ as free parameters. Figure \ref{fig:ebin} shows that the polar fraction
+as a function of $e_{\rm b}$ can be modulated by $j$ to display two behaviors. There exists an analytic solution by \citet{zanazzi2018}, and the tendency is
+for $f_{\rm polar}$ to follow this solution either when $j$ is low or $e_{\rm b}$ is very high. Contrarily, if $j$ is sufficiently large, then a flat distribution
+(e.i. no dependence on $e_{\rm b}$) is preferred except for when $e_{\rm b}$ is very nearly $1$ (see Section \ref{subsubsec:hi_j}).
+
+\subsection{An upper limit on the polar fraction}
+\label{subsec:fp_limit}
+While the true astrophysical distributions of $i$, $e_{\rm b}$, and $j$ are unknown, we can still place constraints on the value of $f_{\rm polar}$.
+As discussed previously, if the disk has no preference for coplanar alignment then we can replace $di$ in Equation \ref{fp_int} with $\frac{1}{2}\sin{du_i}du_i$, integrating
+from 0 to $pi$.
+
+To decide on a distribution for $e_{\rm b}$ let's first look at the behavior of $\Omega_{\rm min}$ in Equation \ref{eq:omega_min}. Let $\gamma$
+be the RHS of that equation. By isolating $\Omega_{\rm min}$ and differentiating we can see that, with respect to $\gamma$,
+\begin{equation}
+    \frac{d\Omega_{\rm min}}{d \gamma} = \frac{1}{2\sqrt{ \gamma (1 - \gamma)}} > 0
+\end{equation}
+
+Differentiating $\gamma$ tells us regardless of $\chi$ that $\frac{d\gamma}{de_{\rm b}} < 0$, so
+\begin{equation}
+    \frac{d\Omega_{\rm min}}{de_{\rm b}} < 0
+\end{equation}
+or that the polar fraction always increases with increasing binary eccentricity.
+To truly get an upper limit we should choose from a family of distributions one that prefers high eccentricities. However, typical distribution
+functions have the form $P(e_{\rm b}) \propto e_{\rm b}^\alpha$ \citep[e.g.][]{hwang2022,ceppi2024}, in which the ``upper limit'' distribution
+is one in which $\alpha \rightarrow \infty$ and $P(e_{\rm b})$ approaches the delta function $\delta(e_{\rm b} - 1)$. This would result in a polar frequency
+of 1. \citet{hwang2022} suggests that for binaries with separations less than 100 AU it is appropriate to adopt a random distribution (i.e. $\alpha=0$). We then simply
+integrate $de_{\rm b}$ from 0 to 1.
+
+\TJ{Now for the question of how to integrate $j$...}
 
 \section{Discussion}
 \label{sec:discussion}

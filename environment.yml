@@ -4,7 +4,6 @@ dependencies:
   - pip:
       - matplotlib==3.4.3
       - daft
-      - git+https://github.com/tedjohnson12/misaligned_cb_disk.git@main
       - git+https://github.com/tedjohnson12/polar-disk-freq.git@main
       - rebound
       - reboundx

@@ -13,6 +13,7 @@
 \newcommand{\RGM}[1]{\textcolor{cyan}{#1}}
 
 \DeclareMathOperator{\arctantwo}{arctan2}
+\DeclareMathOperator{\arccsc}{arccsc}
 
 % Begin!
 \begin{document}
@@ -95,6 +96,73 @@ We describe this setup in detail in Section \ref{sec:methods}
 
 \question{describe the regime we are working in}
 
+
+\section{Analytic Treatment}
+\label{sec:analytic}
+For a massive ring misaligend to its binary host stars, \citet{martin2019} give two conditions for libration. Each condition valid for a different regime of constant of motion $\chi$ (see their Equations 31, 32, 38), defined as
+\begin{equation}
+    \chi = e_{\rm b}^2 - 2\,(1 - e_{\rm b}^2)\,j\,(2j + \cos{i})
+\end{equation}
+for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
+\begin{equation}
+    \label{eq:omega_min}
+    \sin^2{\Omega_{\rm min}} = 
+    \left \{
+    \begin{array}{lr}
+         \frac{(1-e_{\rm b}^2) (2j + \cos^2{i})}{5 e_{\rm b}^2 \sin^2{i}} & \text{if} ~\chi \ge 0 \\
+    \frac{2}{5 \sin^2{i}} + \frac{\cos{i}}{5j \sin^2{i}} - \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2) \sin^2{i}} & \text{if} ~\chi < 0
+    \end{array}
+    \right .
+\end{equation}
+
+The range of $\sin^2{\Omega_{\rm min}}$ being $[0,1]$ there exists some $i_{\rm crit}$ below which all orbits circulate. In the $\chi \ge 0$ case this satisfies the equation
+\begin{equation}
+    \label{eq:icrit1}
+    \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0
+\end{equation}
+
+And in the $\chi < 0$ case $i_{\rm crit}$ satisfies
+\begin{equation}
+    \label{eq:icrit2}
+    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0
+\end{equation}
+Such that if the LHS of Equation \ref{eq:icrit1} or \ref{eq:icrit2} (depending on the value of $\chi$) evaluate to $<0$ then only circulating orbits are allowed.
+
+To get the probability of a polar orbit given randomly distributed $\Omega$ we can use a modified version of Equation 8 from \citet{ceppi2024}.
+\begin{equation}
+    P(j,e_{\rm b}, i) = 
+    \left \{
+    \begin{array}{lr}
+         1 - \frac{2}{\pi} \Omega_{\rm min} & \text{if} ~i > i_{\rm crit} \\
+        0 & \text{if} ~i \le i_{\rm crit}
+    \end{array}
+    \right .
+\end{equation}
+From which the fraction of total polar orbits can be calculated
+\begin{equation}
+    \label{eq:fp_int}
+    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\, dj\,de_{\rm b}\,di
+\end{equation}
+This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized. For example, an isotropic distribution of disks would require we replace $di$ with $\frac{1}{2}\sin{u}\,du$ for $u \in [0,\pi]$.
+
+\subsection{High-$j$ limit}
+\label{subsec:high_j}
+
+When $j$ is very large, the $\chi < 0$ branch of Equation \ref{eq:omega_min} becomes
+\begin{equation}
+    \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}
+\end{equation}
+
+The value of $i_{\rm crit}$ is then
+\begin{equation}
+    i_{\rm crit} = \arccsc{\sqrt{5/2}} = 39.2^\circ
+\end{equation}
+which is the inclination of the last circular orbit for Kozai-Lidov oscillations in the limit that the perturbed object is very far from the perturbers \citep{kozai1962,lidov1962}. It also has no dependence on the disk angular momentum or on the binary eccentricity. For an isotropic angular momentum distribution, find that the polar fraction in this limit is
+\begin{equation}
+    f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
+\end{equation}
+
+This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$.
 
 \section{Methods}
 \label{sec:methods}
@@ -228,64 +296,6 @@ less than a minute to get a very accurate measure of the polar fraction.
 
 \subsection{Analytic treatment}
 \label{subsec:analytic}
-
-\citet{martin2019} give two conditions for libration, each valid for a different regime of constant of motion $\chi$ (see their Equations 31, 32, 38).
-\TJ{(Would it be helpful to define $\chi$?)}
-These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
-\begin{equation}
-    \label{eq:omega_min}
-    \begin{aligned}
-        \sin^2{\Omega_{\rm min}} & = \frac{(1-e_{\rm b}^2) (2j + \cos^2{i})}{5 e_{\rm b}^2 \sin^2{i}} & \text{if} ~\chi \ge 0 \\
-    & = \frac{2}{5 \sin^2{i}} + \frac{\cos{i}}{5j \sin^2{i}} - \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2) \sin^2{i}} & \text{if} ~\chi < 0
-    \end{aligned}
-\end{equation}
-
-The range of $\sin^2{\Omega_{\rm min}}$ being $[0,1]$ there exists some $i_{\rm crit}$ below which all orbits circulate. In the $\chi \ge 0$ case
-this satisfies the equation
-\begin{equation}
-    \label{eq:icrit1}
-    \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0
-\end{equation}
-
-And in the $\chi < 0$ case $i_{\rm crit}$ satisfies
-\begin{equation}
-    \label{eq:icrit2}
-    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0
-\end{equation}
-
-Such that if the LHS of Equation \ref{eq:icrit1} or \ref{eq:icrit2} (depending on the value of $\chi$) evaluate to $<0$ then only circulating orbits are allowed.
-
-To get the probability of a polar orbit given randomly distributed $\Omega$ we can use a modified version of Equation 8 from \citet{ceppi2024}.
-\begin{equation}
-    \begin{aligned}
-        P(j,e_{\rm b}, i) & = 1 - \frac{2}{\pi} \Omega_{\rm min} & \text{if} ~i > i_{\rm crit} \\
-        & = 0 & \text{if} ~i \le i_{\rm crit}
-    \end{aligned}
-\end{equation}
-
-From which the fraction of total polar orbits can be calculated
-\begin{equation}
-    \label{eq:fp_int}
-    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\, dj\,de_{\rm b}\,di
-\end{equation}
-
-This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized.
-For example, an isotropic distribution of disks would require we replace $di$ with $\frac{1}{2}\sin{u}\,du$ for $u \in [0,\pi]$.
-
-\subsubsection{High-$j$ limit}
-\label{subsubsec:hi_j}
-When $j$ is very large, the $\chi < 0$ branch of Equation \ref{eq:omega_min} becomes
-\begin{equation}
-    \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}
-\end{equation}
-
-which has no dependence on the disk angular momentum or on the binary eccentricity. We can then find that the polar fraction in this limit is
-\begin{equation}
-    f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
-\end{equation}
-
-This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$.
-
 
 \section{Results}
 \label{sec:results}

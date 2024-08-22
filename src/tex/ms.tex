@@ -161,8 +161,26 @@ which is the inclination of the last circular orbit for Kozai-Lidov oscillations
 \begin{equation}
     f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
 \end{equation}
-
 This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$.
+
+
+\section{Runge-Kutta-Fehlburg method}
+\label{sec:rk}
+\citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than using \sc{REBOUND} in Section \ref{sec:reb}.
+
+To estimate the value of Equation (\ref{eq:fp_int}) using this method we compute the integral of $P(j,e_{\rm b},i)\,di$ over all $i$; this is the probability of a polar orbit given some $j$ and $e_{\rm b}$. This is done numerically using a grid of simulations. These simulations all vary in their initial conditions, with the longitude of the ascending node $\Omega \in [0,2\pi)$ and mutual inclination $i \in [0,\pi]$.
+
+\begin{figure}
+    \begin{centering}
+        \includegraphics[width=0.5\textwidth]{figures/grid_example.pdf}
+    \end{centering}
+    \caption{
+        Grid of dynamical states for $10^6$ RKF simulations of a system with $e_{\rm b}=0.5$ and $j=0.1$. This grid can be run for any combination of $(e_{\rm b},\,j)$, and integrating over the polar region computes the fraction of systems in which a disk would evolve to a polar state.
+    }
+    \script{grid_example.py}
+    \label{fig:grid_example}
+\end{figure}
+
 
 \section{Methods}
 \label{sec:methods}
@@ -265,18 +283,6 @@ using a bootstrap metric after each batch to compute the polar fraction. Samplin
 typical simulation takes on the order of $0.1-1$ s, so we save the results of each simulation in an SQLite database between batches. When an MC sampler is initialized
 it queries this database for all relevant passed simulations, ingests them, and only runs new simulations if a more stringent confidence interval is requested.
 
-\subsection{Runge-Kutta-Fehlburg method}
-\label{subsec:rk}
-
-In addition to using {\sc REBOUND} in Section \ref{subsec:reb} we can solve the same problem using a slightly more analytical approach. \citet{martin2019} found
-a set of first-order differential equations (their Equations 7-10) based on previous work by \citet{farago2010} that describes the coupled behavior of the
-disk angular momentum direction and the binary eccentricity. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar
-to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. The cost of this method is that it treats
-the binary in the quadrupole approximation, meaning we are not sensitive to the effects of the binary mass fraction, but the computational cost is extremely low; we are
-able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than {\sc REBOUND}.
-
-The added computational efficiency means this method is not restricted to an MC method with hundreds of samples; we can compute a grid of $\sim 10^6$ in
-less than a minute to get a very accurate measure of the polar fraction.
 
 \begin{figure}
     \begin{centering}
@@ -294,8 +300,6 @@ less than a minute to get a very accurate measure of the polar fraction.
     \end{centering}
 \end{figure}
 
-\subsection{Analytic treatment}
-\label{subsec:analytic}
 
 \section{Results}
 \label{sec:results}

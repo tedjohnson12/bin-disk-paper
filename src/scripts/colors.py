@@ -14,3 +14,10 @@ cream = '#DCCA94'
 
 
 cm_teal_cream_orange = LinearSegmentedColormap.from_list('cm_teal_cream_orange',colors=[teal,cream,dark_orange])
+
+state_colors = {
+    'u' : brown,
+    'p': yellow,
+    'r': dark_orange,
+    'l': teal
+}

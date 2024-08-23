@@ -148,7 +148,7 @@ def do_search(ecc:float, _mass: float):
     _transitions = _searcher.search()
     return _transitions
 
-def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float):
+def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float, omega:float = np.pi/2,capture_freq=1):
     """
     Plot the full path for a particular setup.
     
@@ -171,7 +171,7 @@ def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float):
         mass_planet=_mass,
         semimajor_axis_planet=SEP_PLANET,
         inclination_planet=inclination,
-        lon_ascending_node_planet=np.pi/2,
+        lon_ascending_node_planet=omega,
         true_anomaly_planet=NU,
         eccentricity_planet=ECC_PLANET,
         arg_pariapsis_planet=ARG_PARIAPSIS,
@@ -184,8 +184,8 @@ def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float):
     x = incls*np.cos(lon_asc_node)
     y = incls*np.sin(lon_asc_node)
     state = sys.state
-    ls = '-' if _mass == 0 else '--'
-    _ax.plot(x,y, c=color[state], lw=1,ls=ls)
+    ls = '-'
+    _ax.plot(x,y, c=color[state], lw=0.5,ls=ls)
 
 def plot_scatter(_ax: plt.Axes,_sampler: mc.Sampler):
     """
@@ -205,6 +205,18 @@ def plot_scatter(_ax: plt.Axes,_sampler: mc.Sampler):
     y = incl*np.sin(lon_asc_node)
     for state in [system.LIBRATING, system.RETROGRADE, system.PROGRADE, system.UNKNOWN]:
         _ax.scatter(lon_asc_node[states==state], incl[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
+def plot_discrepancy(_ax: plt.Axes, _ax_polar: plt.Axes,_sampler: mc.Sampler):
+    lon_asc_node = np.array(_sampler.lon_ascending_nodes)
+    incl = np.array(_sampler.inclinations)
+    states = np.array(_sampler.states)
+    gamma = get_gamma(ECC_BIN, J)
+    for s, omega, i in zip(states, lon_asc_node, incl):
+        x,y,z = init_xyz(i,omega)
+        _,_,_,_,_,_s = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
+        if s != _s and s != 'u':
+            plot_full(_ax, ECC_BIN, i, MASS_PLANET,omega,capture_freq=10)
+            _ax_polar.scatter(omega, i, c='k', s=5,marker='X',zorder=100)
+        
 
 if __name__ in '__main__':
     fig = plt.figure(figsize=(4,5))
@@ -258,6 +270,7 @@ if __name__ in '__main__':
     s = f'{mean:.2f} \\pm {std:.2f}'
     with open(mc_out,'w',encoding='utf-8') as f:
         f.write(s)
+    plot_discrepancy(ax_cartesian, ax_polar,sampler)
     
     
     

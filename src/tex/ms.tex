@@ -172,7 +172,17 @@ To interpret the Kozai-Lidov oscillations in this limit we can picture a system 
 \label{sec:rk}
 \citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than using \sc{REBOUND} in Section \ref{sec:reb}.
 
-We determine the dynamical state of the system by tracking the orbital quantities $x=i\,\cos{\Omega}$ and $y=i\,\sin{\Omega}$. If a disk undergoes prograde precession, then these quantities form clockwise loops about the origin as the system evolves. Under retrograde precession, these loops are counter-clockwise. However, any state that would lead to a polar orbit (i.e. libration and crescent patterns) will form closed loops that do not encompass the origin, and these tracks will never cross the line $i\,\sin{\Omega}=0$. The state can be determined by tracking the quadrant of the point $(i\,\cos{\Omega},~i\,\sin{\Omega})$: prograde orbits will traverse all quadrants in the order [I, IV, III, II], and retrograde orbits will travel in the opposite order. A polar orbit that stars in quadrant I or II, however, is restricted to those two quadrants and will alternate between them. The same goes for polar orbits in quadrants III and IV. Therefore, the dynamical state can often be determined by the list of previous quadrant crossings. For example, I$\rightarrow$IV can only be caused by prograde precession, III$\rightarrow$IV is ambiguous, and III$\rightarrow$IV$\rightarrow$III indicates a polar orbit.
+We determine the dynamical state of the system by tracking the orbital quantities $x=i\,\cos{\Omega}$ and $y=i\,\sin{\Omega}$, where
+\begin{equation}
+    i = \arccos{\ell_z}
+    \label{eq:inclination}
+\end{equation}
+and
+\begin{equation}
+    \Omega = \arctantwo (\ell_x, -\ell_y)
+    \label{eq:omega}
+\end{equation}
+If a disk undergoes prograde precession, then these quantities form clockwise loops about the origin as the system evolves. Under retrograde precession, these loops are counter-clockwise. However, any state that would lead to a polar orbit (i.e. libration and crescent patterns) will form closed loops that do not encompass the origin, and these tracks will never cross the line $i\,\sin{\Omega}=0$. The state can be determined by tracking the quadrant of the point $(i\,\cos{\Omega},~i\,\sin{\Omega})$: prograde orbits will traverse all quadrants in the order [I, IV, III, II], and retrograde orbits will travel in the opposite order. A polar orbit that stars in quadrant I or II, however, is restricted to those two quadrants and will alternate between them. The same goes for polar orbits in quadrants III and IV. Therefore, the dynamical state can often be determined by the list of previous quadrant crossings. For example, I$\rightarrow$IV can only be caused by prograde precession, III$\rightarrow$IV is ambiguous, and III$\rightarrow$IV$\rightarrow$III indicates a polar orbit.
 
 We estimate the value of Equation (\ref{eq:fp_int}) using this method by computing the integral of $P(j,e_{\rm b},i)\,di$ over all $i$; this is the probability of a polar orbit given some $j$ and $e_{\rm b}$. This is done numerically using a grid of simulations, as shown if Figure \ref{fig:grid_example}. These simulations all vary in their initial conditions, with the longitude of the ascending node $\Omega \in [0,2\pi)$ and mutual inclination $i \in [0,\pi]$.
 
@@ -187,125 +197,43 @@ We estimate the value of Equation (\ref{eq:fp_int}) using this method by computi
     \label{fig:grid_example}
 \end{figure}
 
+\section{Simulating with \sc{REBOUND}}
+\label{sec:reb}
 
-\section{Methods}
-\label{sec:methods}
-We describe two methods to approximate the evolution of a binary-disk system, each optimized for a different balance of computational cost and physical realism.
-First, we use the N-body code {\sc REBOUND} \citep{rebound} to simulate the disk using a point mass. The second method employs a Runge-Kutta-Fehlburg integrator to solve
-equations (7-10) from \citet{martin2019}. These equations treat the central binary in the quadrupole approximation, but can be solved extremely efficiently.
-The code used to run these simulations is publically available\footnote{\codeurl}.
+We use the N-body integration software \sc{REBOUND} \citep{rebound} to simulate a circumbinary system with an additional level of sophistication compared to those described in Section \ref{sec:rk}, in which the binary was treated in the quadrupole approximation. We model the disk as a point mass with its same orbital parameters and angular momentum.
 
-\subsection{Geometric considerations}
-\label{subsec:setup}
+For any given system, the dynamical state is determined similarly to the method described in Section \ref{sec:rk}. Note, however, that the $(i\,\cos{\Omega},~i\,\sin{\Omega})$ tracks now contain small structure on the orbital timescale of the outer mass. These structures can mean that a simulation may not make monotonic progress along its track, occasionally backtracking. Such a backtrack can give a false reading of the dynamical state if it occurs across the $x$ or $y$ axis. To mitigate this problem, we integrate each system until it returns to its original position in $(i\,\cos{\Omega},~i\,\sin{\Omega})$ space. If at, this point, the path does not enclose the origin, then it is polar. Prograde and retrograde motions can be distinguished by the sign of $\langle d\Omega/dt \rangle$. Figure \ref{fig:sim_example} shows paths for a set of simulations initialized with $\Omega = \pi/2$.
 
 \begin{figure}
     \begin{centering}
         \includegraphics[width=0.5\textwidth]{figures/sim_example.pdf}
         \caption{Example of system simulation and state determination. This figure tracks the orbital parameters
-        of a massless third body orbiting a $1 M_\odot$ binary with equal mass stars and $e_b = 0.4$.
-        Initially $\Omega = \frac{\pi}{2}$.
-        Solid lines indicate
-        the portion of the simulation that is required to determine the state. Dashed lines complete the evolution back to the system's
-        initial conditions but are not needed for our analysis. In general, we will only integrate until the state of the system can be
-        determined.}
+        of a third body with $j=0.05$ orbiting a $1 M_\odot$ binary with equal mass stars and $e_b = 0.4$.
+        Initially $\Omega = \frac{\pi}{2}$ in all cases.}
         \label{fig:sim_example}
         \script{sim_example.py}
     \end{centering}
 \end{figure}
 
-The dynamical state of the disk (i.e. prograde circulation, libration, etc.) is determined by tracking two relevant orbital elements:
-mutual inclination $i$ and longitude of ascending node $\Omega$. Each simulation method gives as an output the direction of the disk angular momentum relative to
-the binary $\bm{l}$. We define a coordinate system relative to the binary, with the $z$-axis to be along the
-angular momentum vector, the $x$-axis to be along the eccentricity vector, and the
-$y$-axis so that the coordinate system is right-handed.
+We use the IAS15 Gauss-Radau integrator \citep{reboundias15}, which is a 15th-order variable step size numerical integrator. The maximum timestep this requires is on the order of the binary orbital period, and the integration is therefore much slower than the RKF algorithm, at approximately 2 iterations per second. However, the time required to determine the dynamical state depends on the initial conditions, with some simulation states still undetermined after $10\,000$ outer-mass orbits (~5 seconds). This happens rarely enough that it is most efficient to simply stop the integration, and return an unknown state which must be factored in to our uncertainties.
 
-The relevant coordinates are then defined
+Given that these simulations take much longer than the RKF algorithm, we cannot compute the same grid of dynamical states. Instead, we employ a Monte Carlo (MC) method to estimate the probability of a polar orbit. For any set of parameters (including the binary fraction $f_{\rm b}$ now) we sample isotropically on the $i$-$\Omega$ sphere, and use the bootstrap method to estimate $f_{\rm polar}$. We sample in batches of 4 and stop when the bootstrap confidence interval metric reaches a prescribed value. After each batch, the results are written to an SQLite database to be recalled in the future. Upon initialization, the MC sampler queries this database for all relevant results.
 
-\begin{equation}
-    \cos{i} = \frac{\bm{l} \cdot \hat{\bm{z}}}{\|\bm l\|}
-    \label{eq:inclination}
-\end{equation}
-
-and
-
-\begin{equation}
-    \Omega = \arctantwo (\bm{l} \cdot \hat{\bm{x}}, -\bm{l} \cdot \hat{\bm{y}})
-    \label{eq:omega}
-\end{equation}
-
-Given some initial $(i,\Omega)$, the system can be evolved forward in time to recover the familiar diagram shown in Figure \ref{fig:sim_example}.
-\TJ{cite papers that have similar figures.}
-This visualiztaion also allows the dynamical state to be resolved programically, as a librating state will repeatedly cross the $y$-axis and never
-cross the $x$-axis, and a circulating state will sequentially cross each axis in an order that can determine if it is prograde or retrograde.
-
-
-\subsection{Using {\sc REBOUND}}
-\label{subsec:reb}
-
-\begin{table*}
-    \begin{tabular}{cccp{0.5\textwidth}}
-        \hline
-        name & symbol & type & description \\
-        \hline
-        \texttt{mass\_binary} & $M_b$ & \texttt{float} & The total mass of the binary in solar masses. \\
-        \texttt{mass\_fraction} & $f_b$ & \texttt{float} & The ratio between the secondary mass and the binary mass $M_2/M_b$. \\
-        \texttt{semimajor\_axis\_binary} & $a_b$ & \texttt{float} & The semimajor axis of the binary orbit. \\
-        \texttt{eccentricity\_binary} & $e_b$ & \texttt{float} & The eccentricity of the binary orbit. \\
-        \texttt{mass\_planet} & $m_p$ & \texttt{float} & The mass of the third body. \\
-        \texttt{semimajor\_axis\_planet} & $a_p$ & \texttt{float} & The semimajor of the third body orbiting the binary center of mass. \\
-        \texttt{inclination\_planet} & $i$ & \texttt{float} & The mutual inclination of the binary and the third body. \\
-        \texttt{lon\_ascending\_node\_planet} & $\Omega$ & \texttt{float} & The longitude of the ascending node of the third body. \\
-        \texttt{true\_anomaly\_planet} & $\nu$ & \texttt{float} & The true anomaly of the third body. \\
-        \texttt{gr} & - & \texttt{bool} & Whether to include effects from general relativity. \\
-        \texttt{eccentricity\_planet} & $e_p$ & \texttt{float} & The eccentricity of the third body's orbit. \\
-        \texttt{arg\_pariapsis\_planet} & $\omega$ & \texttt{float} & The argument of pariapsis of the third body's orbit. \\
-        \hline
-    \end{tabular}
-    \caption{ {\sc REBOUND} Simulation parameters}
-    \label{tab:params}
-\end{table*}
-
-We use {\sc REBOUND}'s Python interface to initialize our simulation. Table \ref{tab:params} describes the simulation's
-input parameters. We integrate the system using the IAS15 15th order Gauss-Radau integrator \citep{reboundias15}
-until we can determine the system's state.
-
-Not much can be learned from a single simulation as it only allows us to map from one point in $(i,\Omega)$ space to an end state. To infer the behavior of a population
-(and from that compute a polar fraction) we employ a Monte Carlo (MC) method, sampling isotropically on the $(i,\Omega)$ sphere. That is, $\Omega \in \mathcal{U}(0,2\pi)$
-and $i \in \{\arcsin{(2u-1)} + \frac{\pi}{2} \mid u \in \mathcal{U}(0,1)\}$.
-
-\begin{figure*}
-    \begin{centering}
-        \includegraphics[width=\textwidth]{figures/mc_example.pdf}
-        \caption{Monte Carlo results for a $1 M_\odot$ equal mass binary with $e_b=0.4$ for $j=0,0.5,1$. The position of each
-        point shows the initial condition of the simulation, and the color denotes the dynamical state. Note that some are marked
-        as ``unknown''. This is because we set a 1000 orbit limit on the integration for the sake of computational time.}
-        \script{mc_example.py}
-        \label{fig:mc}
-    \end{centering}
-\end{figure*}
-
-Each MC run is initialized with the conditions of the binary as well as the angular momentum of the disk. We then sample $i$ and $\Omega$ in batches of four simulations,
-using a bootstrap metric after each batch to compute the polar fraction. Sampling stops when the bootstrap-computed confidence interval reaches a prescribed value. A 
-typical simulation takes on the order of $0.1-1$ s, so we save the results of each simulation in an SQLite database between batches. When an MC sampler is initialized
-it queries this database for all relevant passed simulations, ingests them, and only runs new simulations if a more stringent confidence interval is requested.
-
+\TJ{(How to account for the changing position of the COM was $f_{\rm b}$ changes? This is used to define the coordinate system)}
 
 \begin{figure}
     \begin{centering}
         \includegraphics[width=0.5\textwidth]{figures/compare_massive.pdf}
         \caption{
-            Contour lines denoting solution boundaries found via the RKF method compared to MC results of the same conditions. Binary setup is the same
-            as in Figure \ref{fig:mc}, but for $j=0.66$, which is its critical value \citep[see][]{martin2019,abod2022}. The grid here includes 250,000 points.
-            There is some disagreement between RKF and {\sc REBOUND}, which we attribute to misclassification due to behavior on the orbital timescale (i.e. 
-            small variations in $\Omega$ that cause the simulation to temporarily cross the $y$-axis twice, giving the false appearance of libration). \TJ{We can fix this}
+            MC results (points) for $e_{\rm b}=0.4$, $j=0.67$, and $f_{\rm b}=0.5$ compared to RKF results for the same setup (contour lines). This value of $j$ is chosen here as it is the critical value \citep[see][]{martin2019,abod2022}, beyond which retrograde dynamical states are not allowed.
+            Note that some points that \sc{REBOUND} classifies as polar fall outside the RKF polar region.
             The MC result gives $f_{\text{polar}} = \variable{output/mc_out.txt}$ while the RKF result gives $f_{\text{polar}} = \variable{output/rk_out.txt}$ with
-            numerical error on the order of $\variable{output/rk_err.txt}$.
+            numerical error on the order of $\variable{output/rk_err.txt}$. 
         }
         \script{compare_massive.py}
         \label{fig:rkf}
     \end{centering}
 \end{figure}
-
 
 \section{Results}
 \label{sec:results}
@@ -317,9 +245,9 @@ To determine the polar fraction of a given population we must consider three dis
     \item The binary eccentricity $e_{\rm b}$ \label{it:eb}
 \end{enumerate}
 
-In Section \ref{sec:methods} we made the simplifying assumption that $\bm{l}$ is isotropic. Note that this is in contrast to the exponential distribution in
+In Section \ref{sec:analytic} we made the simplifying assumption that $\bm{l}$ is isotropic. Note that this is in contrast to the exponential distribution in
 mutual inclination employed by \citet{ceppi2024}. The decaying exponential prefers disks that are aligned with the binary -- valid in the wide-binary regime, but
-hydrodynamic simulations by \citep{elsender2023} found that for binaries with separations on the order of 1 AU that mutual inclinations are seemingly randomly
+hydrodynamic simulations by \citep{elsender2023} found that, for binaries with separations on the order of 1 AU, mutual inclinations are seemingly randomly
 distributed between $0$ and $\pi$. % See their fig 8
 
 \begin{figure*}

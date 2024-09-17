@@ -141,9 +141,11 @@ To get the probability of a polar orbit given randomly distributed $\Omega$ we c
 From which the fraction of total polar orbits can be calculated
 \begin{equation}
     \label{eq:fp_int}
-    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\, dj\,de_{\rm b}\,di
+    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\,p_j(j)\,p_{e_\text{b}}(e_\text{b})\,p_i(i)\, dj\,de_{\rm b}\,di
 \end{equation}
-This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized. For example, an isotropic distribution of disks would require we replace $di$ with $\frac{1}{2}\sin{u}\,du$ for $u \in [0,\pi]$.
+where $p_j(j)$, $p_{e_\text{b}}(e_\text{b})$, and $p_i(i)$ are the distributions of $j$, $e_\text{b}$, and $i$, respectively.
+
+This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized. For example, an isotropic distribution of disks would require $p_i(i) = \frac{1}{2}\sin{i}$ integrating from $0$ to $\pi$.
 
 \subsection{High-$j$ limit}
 \label{subsec:high_j}
@@ -165,12 +167,9 @@ This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to fo
 
 To interpret the Kozai-Lidov oscillations in this limit we can picture a system from the point of view of a far-away stationary observer. When $j \approx 0$, the orbital parameters of the interior binary are not effected by the disk, and the disk undergoes precession or libration due to the effects of the binary. When $j$ is high, however, it is the disk that appears static. An observer would see oscillations in the orbital parameters of the central binary, and its angular momentum and eccentricity vectors would change in response to the disk. This can be thought of in terms of the classical Kozai-Lidov problem, where instead of a planet and its satellite, the interior objects are the binary, and the exterior perturbing object is the circumbinary disk.
 
-\TJ{Does this explain why we see prograde precession when $i=\pi$ for high $j$. Will prograde precession of an anti-aligned disk lead to alignment?}
-
-
 \section{Runge-Kutta-Fehlburg method}
 \label{sec:rk}
-\citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than using \sc{REBOUND} in Section \ref{sec:reb}.
+\citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than using {\sc REBOUND} in Section \ref{sec:reb}.
 
 We determine the dynamical state of the system by tracking the orbital quantities $x=i\,\cos{\Omega}$ and $y=i\,\sin{\Omega}$, where
 \begin{equation}
@@ -197,10 +196,10 @@ We estimate the value of Equation (\ref{eq:fp_int}) using this method by computi
     \label{fig:grid_example}
 \end{figure}
 
-\section{Simulating with \sc{REBOUND}}
+\section{Simulating with {\sc REBOUND}}
 \label{sec:reb}
 
-We use the N-body integration software \sc{REBOUND} \citep{rebound} to simulate a circumbinary system with an additional level of sophistication compared to those described in Section \ref{sec:rk}, in which the binary was treated in the quadrupole approximation. We model the disk as a point mass with its same orbital parameters and angular momentum.
+We use the N-body integration software {\sc REBOUND} \citep{rebound} to simulate a circumbinary system with an additional level of sophistication compared to those described in Section \ref{sec:rk}, in which the binary was treated in the quadrupole approximation. We model the disk as a point mass with its same orbital parameters and angular momentum.
 
 For any given system, the dynamical state is determined similarly to the method described in Section \ref{sec:rk}. Note, however, that the $(i\,\cos{\Omega},~i\,\sin{\Omega})$ tracks now contain small structure on the orbital timescale of the outer mass. These structures can mean that a simulation may not make monotonic progress along its track, occasionally backtracking. Such a backtrack can give a false reading of the dynamical state if it occurs across the $x$ or $y$ axis. To mitigate this problem, we integrate each system until it returns to its original position in $(i\,\cos{\Omega},~i\,\sin{\Omega})$ space. If at, this point, the path does not enclose the origin, then it is polar. Prograde and retrograde motions can be distinguished by the sign of $\langle d\Omega/dt \rangle$. Figure \ref{fig:sim_example} shows paths for a set of simulations initialized with $\Omega = \pi/2$.
 
@@ -219,14 +218,13 @@ We use the IAS15 Gauss-Radau integrator \citep{reboundias15}, which is a 15th-or
 
 Given that these simulations take much longer than the RKF algorithm, we cannot compute the same grid of dynamical states. Instead, we employ a Monte Carlo (MC) method to estimate the probability of a polar orbit. For any set of parameters (including the binary fraction $f_{\rm b}$ now) we sample isotropically on the $i$-$\Omega$ sphere, and use the bootstrap method to estimate $f_{\rm polar}$. We sample in batches of 4 and stop when the bootstrap confidence interval metric reaches a prescribed value. After each batch, the results are written to an SQLite database to be recalled in the future. Upon initialization, the MC sampler queries this database for all relevant results.
 
-\TJ{(How to account for the changing position of the COM was $f_{\rm b}$ changes? This is used to define the coordinate system)}
 
 \begin{figure}
     \begin{centering}
         \includegraphics[width=0.5\textwidth]{figures/compare_massive.pdf}
         \caption{
             MC results (points) for $e_{\rm b}=0.4$, $j=0.67$, and $f_{\rm b}=0.5$ compared to RKF results for the same setup (contour lines). This value of $j$ is chosen here as it is the critical value \citep[see][]{martin2019,abod2022}, beyond which retrograde dynamical states are not allowed.
-            Note that some points that \sc{REBOUND} classifies as polar fall outside the RKF polar region.
+            Note that some points that {\sc REBOUND} classifies as polar fall outside the RKF polar region.
             The MC result gives $f_{\text{polar}} = \variable{output/mc_out.txt}$ while the RKF result gives $f_{\text{polar}} = \variable{output/rk_out.txt}$ with
             numerical error on the order of $\variable{output/rk_err.txt}$. 
         }
@@ -234,6 +232,8 @@ Given that these simulations take much longer than the RKF algorithm, we cannot 
         \label{fig:rkf}
     \end{centering}
 \end{figure}
+
+Figure \ref{fig:rkf} shows that, while the RKF and {\sc rebound} simulations produce similar results, they are not identical. Specifically noticeable are points sampled by the MC algorithm that lie outside the RKF libration region (with a higher inclination), but are found by {\sc rebound} to librate. There are also points with the opposite discrepancy -- those that lie in the RKF libration region but produce prograde precession -- but they are fewer and not as noticeable by eye. \TJ{(We should try to figure out why this happens)}. However, on the population level, the two measurements of $f_\text{polar}$ lie within the MC uncertainty. As the RKF method is much faster computationally, we will use those results in discussing populations.
 
 \section{Results}
 \label{sec:results}
@@ -247,10 +247,10 @@ To determine the polar fraction of a given population we must consider three dis
 
 In Section \ref{sec:analytic} we made the simplifying assumption that $\bm{l}$ is isotropic. Note that this is in contrast to the exponential distribution in
 mutual inclination employed by \citet{ceppi2024}. The decaying exponential prefers disks that are aligned with the binary -- valid in the wide-binary regime, but
-hydrodynamic simulations by \citep{elsender2023} found that, for binaries with separations on the order of 1 AU, mutual inclinations are seemingly randomly
+hydrodynamic simulations by \citet{elsender2023} found that, for binaries with separations on the order of 1 AU, mutual inclinations are seemingly randomly
 distributed between $0$ and $\pi$. % See their fig 8
 
-\begin{figure*}
+\begin{figure*}[!htbp]
     \begin{centering}
         \includegraphics[width=1\textwidth]{figures/compare_ebin.pdf}
         \caption{
@@ -268,13 +268,17 @@ distributed between $0$ and $\pi$. % See their fig 8
 First, let's not consider the other two distributions, and leave $j$ and $e_{\rm b}$ as free parameters. Figure \ref{fig:ebin} shows that the polar fraction
 as a function of $e_{\rm b}$ can be modulated by $j$ to display two behaviors. There exists an analytic solution by \citet{zanazzi2018}, and the tendency is
 for $f_{\rm polar}$ to follow this solution either when $j$ is low or $e_{\rm b}$ is very high. Contrarily, if $j$ is sufficiently large, then a flat distribution
-(e.i. no dependence on $e_{\rm b}$) is preferred except for when $e_{\rm b}$ is very nearly $1$ (see Section \ref{subsubsec:hi_j}).
+(e.i. no dependence on $e_{\rm b}$) is preferred except for when $e_{\rm b}$ is very nearly $1$ (the Kozai-Lidov regime, see Section \ref{subsec:high_j}).
 
 \subsection{An upper limit on the polar fraction}
 \label{subsec:fp_limit}
 While the true astrophysical distributions of $i$, $e_{\rm b}$, and $j$ are unknown, we can still place constraints on the value of $f_{\rm polar}$.
-As discussed previously, if the disk has no preference for coplanar alignment then we can replace $di$ in Equation \ref{eq:fp_int} with $\frac{1}{2}\sin{du_i}du_i$, integrating
-from 0 to $\pi$.
+As mentioned previously, if the disk has no preference for coplanar alignment, then
+\begin{equation}
+    p_i(i) = \frac{1}{2} \sin{i}
+\end{equation}
+and we integrate from $0$ to $\pi$.
+
 
 To decide on a distribution for $e_{\rm b}$ let's first look at the behavior of $\Omega_{\rm min}$ in Equation \ref{eq:omega_min}. Let $\gamma$
 be the RHS of that equation. By isolating $\Omega_{\rm min}$ and differentiating we can see that, with respect to $\gamma$,
@@ -287,13 +291,34 @@ Differentiating $\gamma$ tells us regardless of $\chi$ that $\frac{d\gamma}{de_{
     \frac{d\Omega_{\rm min}}{de_{\rm b}} < 0
 \end{equation}
 or that the polar fraction always increases with increasing binary eccentricity.
+
+
 To truly get an upper limit we should choose from a family of distributions one that prefers high eccentricities. However, typical distribution
 functions have the form $P(e_{\rm b}) \propto e_{\rm b}^\alpha$ \citep[e.g.][]{hwang2022,ceppi2024}, in which the ``upper limit'' distribution
 is one in which $\alpha \rightarrow \infty$ and $P(e_{\rm b})$ approaches the delta function $\delta(e_{\rm b} - 1)$. This would result in a polar frequency
 of 1. \citet{hwang2022} suggests that for binaries with separations less than 100 AU it is appropriate to adopt a random distribution (i.e. $\alpha=0$). We then simply
-integrate $de_{\rm b}$ from 0 to 1.
+integrate from 0 to 1 with
+\begin{equation}
+    p_{e_\text{b}}(e_\text{n}) = 1
+\end{equation}
 
-\TJ{Now for the question of how to integrate $j$...}
+We elect not to make any assumptions about the distribution of $j$. We will instead calculate $f_\text{polar}$ for various constant $j$. This is analogous by replacing $j$ in Equation (\ref{eq:fp_int}) with $j'$, and letting $p_{j'}(j') = \delta(j'-j)$. We are now interested in the polar fraction at fixed $j$:
+\begin{equation}
+    f_\text{polar}(j) = \int_{0}^{\pi} \int_{0}^{1} P(j,e_\text{b},i)\, \frac{1}{2} \sin{i}\,de_\text{b}\,di
+\end{equation}
+
+Figure \ref{fig:fpol_j} shows this integral computed for a range of $j$. We see that for low $j$, $f_\text{polar} \lessapprox 0.5$.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fpol_j.pdf}
+    \caption{
+        Polar fraction $f_\text{polar}$ upper limit as a function of normalized disk angular momentum $j$. These simulations assume a population of binary systems with constant $j$, random $e_\text{b}$, and disks whose angular momentum vectors are distributed isotropically with respect to the binary angular momentum. These values were computed using the analytic technique described in Section \ref{sec:analytic}.
+    }
+    \script{f_p_of_j.py}
+    \label{fig:fpol_j}
+\end{figure*}
+
 
 \section{Discussion}
 \label{sec:discussion}

@@ -214,7 +214,7 @@ def plot_discrepancy(_ax: plt.Axes, _ax_polar: plt.Axes,_sampler: mc.Sampler):
         x,y,z = init_xyz(i,omega)
         _,_,_,_,_,_s = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
         if s != _s and s != 'u':
-            plot_full(_ax, ECC_BIN, i, MASS_PLANET,omega,capture_freq=10)
+            plot_full(_ax, ECC_BIN, i, MASS_PLANET,omega,capture_freq=20)
             _ax_polar.scatter(omega, i, c='k', s=5,marker='X',zorder=100)
         
 
@@ -270,7 +270,7 @@ if __name__ in '__main__':
     s = f'{mean:.2f} \\pm {std:.2f}'
     with open(mc_out,'w',encoding='utf-8') as f:
         f.write(s)
-    plot_discrepancy(ax_cartesian, ax_polar,sampler)
+    # plot_discrepancy(ax_cartesian, ax_polar,sampler)
     
     
     

@@ -20,11 +20,12 @@ plt.style.use('bmh')
 mb = 1
 ab = 0.2
 eb = 0.4
-J = 2
+J = 0
 ap = 5*ab
 
 
-i_arr = np.array([0.1,0.2,0.3,0.4,0.5,-0.3,-0.4,-0.5,0.8,0.9,1.0])*np.pi
+# i_arr = np.array([0.1,0.2,0.3,0.4,0.5,-0.3,-0.4,-0.5,0.8,0.9,1.0])*np.pi
+i_arr = np.array([0.9])*np.pi
 
 color = {
     system.UNKNOWN : colors.brown,
@@ -32,9 +33,9 @@ color = {
     system.RETROGRADE: colors.dark_orange,
     system.LIBRATING: colors.teal
 }
-def run_full(i:float,e:float, fb:float)->system.System:
+def run_full(i:float,e:float, fb:float,_j:float)->system.System:
     mp = helpers.get_mass_planet(
-        _j=J,
+        _j=_j,
         m_bin=mb,
         f_bin=fb,
         e_bin=eb,
@@ -53,13 +54,13 @@ def run_full(i:float,e:float, fb:float)->system.System:
 if __name__ in '__main__':
     fig, ax = plt.subplots(1,1,figsize=(4,4))
     ax: plt.Axes
-    
-    for inclination in i_arr:
-        for ls, lw, fb in zip(['-', '--'],[0.1,0.1], [0.5, 0.95]):
-            sys = run_full(inclination,eb,fb)
-            state = sys.state
-            c = color[state]
-            ax.plot(sys.icosomega,sys.isinomega,c=c,lw=lw,ls=ls)
+    for _j in [0,2]:
+        for inclination in i_arr:
+            for ls, lw, fb in zip(['-', '--'],[0.3,0.3], [0.5, 0.55]):
+                sys = run_full(inclination,eb,fb,_j)
+                state = sys.state
+                c = color[state]
+                ax.plot(sys.icosomega,sys.isinomega,c=c,lw=lw,ls=ls)
 
     lines = [
         Line2D([0],[0],color=color[system.PROGRADE],lw=2),

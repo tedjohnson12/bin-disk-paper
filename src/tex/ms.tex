@@ -22,14 +22,14 @@
 \title{Probabilities of polar aligned disks in binary star systems}
 
 % Author list
-\author{Ted Johnson}
+\author[0000-0002-1570-2203]{Ted Johnson}
 %\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
-\author{Rebecca G. Martin}
+\author[0000-0003-2401-7168]{Rebecca G. Martin}
 %\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
-\author{Stephen Lepp}
+\author[0000-0003-2270-1310]{Stephen Lepp}
 \affiliation{Nevada Center for Astrophysics, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
-\author{Stephen H. Lubow}
+\author[0000-0002-4636-7348]{Stephen H. Lubow}
 \affiliation{Space Telescope Science Institute, 3700 San Martin Drive, Baltimore, MD 21218, USA}
 
 % Abstract with filler text
@@ -99,11 +99,11 @@ We describe this setup in detail in Section \ref{sec:methods}
 
 \section{Analytic Treatment}
 \label{sec:analytic}
-For a massive ring misaligend to its binary host stars, \citet{martin2019} give two conditions for libration. Each condition valid for a different regime of constant of motion $\chi$ (see their Equations 31, 32, 38), defined as
+For a massive ring that is misaligned to the binary orbit there are two conditions that determine if the ring is librating \citep[see Equations 31, 32, 38 in][]{martin2019}. Each condition is valid for a different regime of the constant of motion $\chi$ that is defined with
 \begin{equation}
     \chi = e_{\rm b}^2 - 2\,(1 - e_{\rm b}^2)\,j\,(2j + \cos{i})
 \end{equation}
-for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
+for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. \RGM{maybe include equations 32 and 38 in ML19 here?} These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
 \begin{equation}
     \label{eq:omega_min}
     \sin^2{\Omega_{\rm min}} = 
@@ -115,20 +115,19 @@ for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\r
     \right .
 \end{equation}
 
-The range of $\sin^2{\Omega_{\rm min}}$ being $[0,1]$ there exists some $i_{\rm crit}$ below which all orbits circulate. In the $\chi \ge 0$ case this satisfies the equation
+Since the range of $\sin^2{\Omega_{\rm min}}$ is $[0,1]$, there exists a critical value for the inclination, $i_{\rm crit}$, below which all orbits circulate. For the $\chi \ge 0$ case, we require
 \begin{equation}
     \label{eq:icrit1}
     \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0
 \end{equation}
-
-And in the $\chi < 0$ case $i_{\rm crit}$ satisfies
+and for the $\chi < 0$ case, $i_{\rm crit}$ satisfies
 \begin{equation}
     \label{eq:icrit2}
-    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0
+    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0.
 \end{equation}
-Such that if the LHS of Equation \ref{eq:icrit1} or \ref{eq:icrit2} (depending on the value of $\chi$) evaluate to $<0$ then only circulating orbits are allowed.
+If the left hand side of equation~(\ref{eq:icrit1}) or~(\ref{eq:icrit2}) (depending on the value of $\chi$) evaluates to $<0$, then only circulating orbits are possible.
 
-To get the probability of a polar orbit given randomly distributed $\Omega$ we can use a modified version of Equation 8 from \citet{ceppi2024}.
+Given a uniformly distributed $\Omega$, the probability of a polar orbit  is given by
 \begin{equation}
     P(j,e_{\rm b}, i) = 
     \left \{
@@ -138,14 +137,15 @@ To get the probability of a polar orbit given randomly distributed $\Omega$ we c
     \end{array}
     \right .
 \end{equation}
-From which the fraction of total polar orbits can be calculated
+\citep{zanazzi2018,ceppi2024}.
+The fraction of polar orbits is then calculated with
 \begin{equation}
     \label{eq:fp_int}
-    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\,p_j(j)\,p_{e_\text{b}}(e_\text{b})\,p_i(i)\, dj\,de_{\rm b}\,di
+    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\,p_j(j)\,p_{e_\text{b}}(e_\text{b})\,p_i(i)\, dj\,de_{\rm b}\,di,
 \end{equation}
-where $p_j(j)$, $p_{e_\text{b}}(e_\text{b})$, and $p_i(i)$ are the distributions of $j$, $e_\text{b}$, and $i$, respectively.
+where $p_j(j)$, $p_{e_\text{b}}(e_\text{b})$, and $p_i(i)$ are the probability distributions of $j$, $e_\text{b}$, and $i$, respectively.
 
-This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized. For example, an isotropic distribution of disks would require $p_i(i) = \frac{1}{2}\sin{i}$ integrating from $0$ to $\pi$.
+This integral is straightforward to compute numerically, and allows for any desired distribution in $j$, $e_{\rm b}$, or $i$, so long as they are normalized. For example, an isotropic distribution of disk \RGM{orientation relative to the binary} would require $p_i(i) = \frac{1}{2}\sin{i}$ for $i$ in the range of $0$ to $\pi$.
 
 \subsection{High-$j$ limit}
 \label{subsec:high_j}
@@ -154,22 +154,24 @@ When $j$ is very large, the $\chi < 0$ branch of Equation \ref{eq:omega_min} bec
 \begin{equation}
     \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}
 \end{equation}
-
-The value of $i_{\rm crit}$ is then
+and the value of $i_{\rm crit}$ is 
 \begin{equation}
-    i_{\rm crit} = \arccsc{\sqrt{5/2}} = 39.2^\circ
+    i_{\rm crit} = \arccsc{\sqrt{5/2}} = 39.2^\circ.
 \end{equation}
-which is the inclination of the last circular orbit for Kozai-Lidov oscillations in the limit that the perturbed object is very far from the perturbers \citep{kozai1962,lidov1962}. It also has no dependence on the disk angular momentum or on the binary eccentricity. For an isotropic angular momentum distribution, find that the polar fraction in this limit is
+This is the inclination of the last circular orbit for Kozai-Lidov oscillations in the limit that the perturbed object is very far from the perturber \citep{vonzeipel1910,kozai1962,lidov1962}. Note that it has no dependence on the disk angular momentum or on the binary eccentricity. 
+
+For an isotropic angular momentum distribution,  the polar fraction in this limit is
 \begin{equation}
     f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
 \end{equation}
 This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$.
 
-To interpret the Kozai-Lidov oscillations in this limit we can picture a system from the point of view of a far-away stationary observer. When $j \approx 0$, the orbital parameters of the interior binary are not effected by the disk, and the disk undergoes precession or libration due to the effects of the binary. When $j$ is high, however, it is the disk that appears static. An observer would see oscillations in the orbital parameters of the central binary, and its angular momentum and eccentricity vectors would change in response to the disk. This can be thought of in terms of the classical Kozai-Lidov problem, where instead of a planet and its satellite, the interior objects are the binary, and the exterior perturbing object is the circumbinary disk.
+To interpret the Kozai-Lidov oscillations in this limit we can picture a system from the point of view of a far-away stationary observer. When $j \approx 0$, the orbital parameters of the interior binary are not affected by the disk, and the disk undergoes precession or libration due to the effects of the binary. When $j$ is high, however, it is the disk that appears static. An observer would see oscillations in the orbital parameters of the central binary, and its angular momentum and eccentricity vectors would change in response to the disk. This can be thought of in terms of the classical Kozai-Lidov problem, where instead of a planet and its satellite, the interior objects are the binary, and the exterior perturbing object is the circumbinary disk.
 
-\section{Runge-Kutta-Fehlburg method}
+%\section{Runge-Kutta-Fehlburg method}
+\section{Secular Approximation}
 \label{sec:rk}
-\citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than using {\sc REBOUND} in Section \ref{sec:reb}.
+\citet[Equations (7-10)]{martin2019} also provide a set of coupled first-order differential equations that describe the evolution of $e_{\rm b}$ along with the direction of the disk angular momentum $(\ell_x, \ell_y, \ell_z)$, based on previous work by \citet{farago2010}. We solve these equations using the Runge-Kutta-Fehlberg (RKF) method \TJ{ref?} -- a numerical method similar to the common 4th order Runge-Kutta integrator, but that computes a 5th order solution to allow for a variable step size. This method treats the binary in the quadrupole approximation, meaning that it is not sensitive to the effects of the binary mass fraction or orbital dynamics that occur on timescales less than the binary orbital period \citep[e.g.][]{naoz2016}. However, the computational cost is extremely low; we are able to run $10^4$-$10^5$ simulations per second -- about 10,000 times faster than running $n$-body simulations (see Section \ref{sec:reb}).
 
 We determine the dynamical state of the system by tracking the orbital quantities $x=i\,\cos{\Omega}$ and $y=i\,\sin{\Omega}$, where
 \begin{equation}
@@ -178,10 +180,10 @@ We determine the dynamical state of the system by tracking the orbital quantitie
 \end{equation}
 and
 \begin{equation}
-    \Omega = \arctantwo (\ell_x, -\ell_y)
+    \Omega = \arctantwo (\ell_x, -\ell_y).
     \label{eq:omega}
 \end{equation}
-If a disk undergoes prograde precession, then these quantities form clockwise loops about the origin as the system evolves. Under retrograde precession, these loops are counter-clockwise. However, any state that would lead to a polar orbit (i.e. libration and crescent patterns) will form closed loops that do not encompass the origin, and these tracks will never cross the line $i\,\sin{\Omega}=0$. The state can be determined by tracking the quadrant of the point $(i\,\cos{\Omega},~i\,\sin{\Omega})$: prograde orbits will traverse all quadrants in the order [I, IV, III, II], and retrograde orbits will travel in the opposite order. A polar orbit that stars in quadrant I or II, however, is restricted to those two quadrants and will alternate between them. The same goes for polar orbits in quadrants III and IV. Therefore, the dynamical state can often be determined by the list of previous quadrant crossings. For example, I$\rightarrow$IV can only be caused by prograde precession, III$\rightarrow$IV is ambiguous, and III$\rightarrow$IV$\rightarrow$III indicates a polar orbit.
+If a disk undergoes prograde nodal precession, then these quantities form clockwise loops about the origin as the system evolves. Under retrograde precession, these loops are counter-clockwise. However, any state that would lead to a polar orbit (i.e. libration and crescent patterns) will form closed loops that do not encompass the origin, and these tracks will never cross the line $i\,\sin{\Omega}=0$. The state can be determined by tracking the quadrant of the point $(i\,\cos{\Omega},~i\,\sin{\Omega})$: prograde orbits will traverse all quadrants in the order [I, IV, III, II], and retrograde orbits will travel in the opposite order. A polar orbit that stars in quadrant I or II, however, is restricted to those two quadrants and will alternate between them. The same goes for polar orbits in quadrants III and IV. Therefore, the dynamical state can often be determined by the list of previous quadrant crossings. For example, I$\rightarrow$IV can only be caused by prograde precession, III$\rightarrow$IV is ambiguous, and III$\rightarrow$IV$\rightarrow$III indicates a polar orbit.
 
 We estimate the value of Equation (\ref{eq:fp_int}) using this method by computing the integral of $P(j,e_{\rm b},i)\,di$ over all $i$; this is the probability of a polar orbit given some $j$ and $e_{\rm b}$. This is done numerically using a grid of simulations, as shown if Figure \ref{fig:grid_example}. These simulations all vary in their initial conditions, with the longitude of the ascending node $\Omega \in [0,2\pi)$ and mutual inclination $i \in [0,\pi]$.
 
@@ -196,10 +198,10 @@ We estimate the value of Equation (\ref{eq:fp_int}) using this method by computi
     \label{fig:grid_example}
 \end{figure}
 
-\section{Simulating with {\sc REBOUND}}
+\section{$n$-body simulations}
 \label{sec:reb}
 
-We use the N-body integration software {\sc REBOUND} \citep{rebound} to simulate a circumbinary system with an additional level of sophistication compared to those described in Section \ref{sec:rk}, in which the binary was treated in the quadrupole approximation. We model the disk as a point mass with its same orbital parameters and angular momentum.
+We use the N-body integration software {\sc rebound} \citep{rebound} to simulate a circumbinary system with an additional level of sophistication compared to those described in Section \ref{sec:rk}, in which the binary was treated in the quadrupole approximation. We model the disk as a point mass with its same orbital parameters and angular momentum.
 
 For any given system, the dynamical state is determined similarly to the method described in Section \ref{sec:rk}. Note, however, that the $(i\,\cos{\Omega},~i\,\sin{\Omega})$ tracks now contain small structure on the orbital timescale of the outer mass. These structures can mean that a simulation may not make monotonic progress along its track, occasionally backtracking. Such a backtrack can give a false reading of the dynamical state if it occurs across the $x$ or $y$ axis. To mitigate this problem, we integrate each system until it returns to its original position in $(i\,\cos{\Omega},~i\,\sin{\Omega})$ space. If at, this point, the path does not enclose the origin, then it is polar. Prograde and retrograde motions can be distinguished by the sign of $\langle d\Omega/dt \rangle$. Figure \ref{fig:sim_example} shows paths for a set of simulations initialized with $\Omega = \pi/2$.
 
@@ -224,9 +226,9 @@ Given that these simulations take much longer than the RKF algorithm, we cannot 
         \includegraphics[width=0.5\textwidth]{figures/compare_massive.pdf}
         \caption{
             MC results (points) for $e_{\rm b}=0.4$, $j=0.67$, and $f_{\rm b}=0.5$ compared to RKF results for the same setup (contour lines). This value of $j$ is chosen here as it is the critical value \citep[see][]{martin2019,abod2022}, beyond which retrograde dynamical states are not allowed.
-            Note that some points that {\sc REBOUND} classifies as polar fall outside the RKF polar region.
+            Note that some points that {\sc rebound} classifies as polar fall outside the RKF polar region.
             The MC result gives $f_{\text{polar}} = \variable{output/mc_out.txt}$ while the RKF result gives $f_{\text{polar}} = \variable{output/rk_out.txt}$ with
-            numerical error on the order of $\variable{output/rk_err.txt}$. 
+            numerical error on the order of $\variable{output/rk_err.txt}$. \RGM{Explain the black lines}
         }
         \script{compare_massive.py}
         \label{fig:rkf}
@@ -268,7 +270,7 @@ distributed between $0$ and $\pi$. % See their fig 8
 First, let's not consider the other two distributions, and leave $j$ and $e_{\rm b}$ as free parameters. Figure \ref{fig:ebin} shows that the polar fraction
 as a function of $e_{\rm b}$ can be modulated by $j$ to display two behaviors. There exists an analytic solution by \citet{zanazzi2018}, and the tendency is
 for $f_{\rm polar}$ to follow this solution either when $j$ is low or $e_{\rm b}$ is very high. Contrarily, if $j$ is sufficiently large, then a flat distribution
-(e.i. no dependence on $e_{\rm b}$) is preferred except for when $e_{\rm b}$ is very nearly $1$ (the Kozai-Lidov regime, see Section \ref{subsec:high_j}).
+(i.e. no dependence on $e_{\rm b}$) is preferred except for when $e_{\rm b}$ is very nearly $1$ (the Kozai-Lidov regime, see Section \ref{subsec:high_j}).
 
 \subsection{An upper limit on the polar fraction}
 \label{subsec:fp_limit}
@@ -302,7 +304,7 @@ integrate from 0 to 1 with
     p_{e_\text{b}}(e_\text{n}) = 1
 \end{equation}
 
-We elect not to make any assumptions about the distribution of $j$. We will instead calculate $f_\text{polar}$ for various constant $j$. This is analogous by replacing $j$ in Equation (\ref{eq:fp_int}) with $j'$, and letting $p_{j'}(j') = \delta(j'-j)$. We are now interested in the polar fraction at fixed $j$:
+We elect not to make any assumptions about the distribution of $j$. We will instead calculate $f_\text{polar}$ for various values of constant $j$. This is analogous by replacing $j$ in equation~(\ref{eq:fp_int}) with $j'$, and letting $p_{j'}(j') = \delta(j'-j)$. We are now interested in the polar fraction at fixed $j$:
 \begin{equation}
     f_\text{polar}(j) = \int_{0}^{\pi} \int_{0}^{1} P(j,e_\text{b},i)\, \frac{1}{2} \sin{i}\,de_\text{b}\,di
 \end{equation}
@@ -323,6 +325,8 @@ Figure \ref{fig:fpol_j} shows this integral computed for a range of $j$. We see 
 \section{Discussion}
 \label{sec:discussion}
 
+\RGM{Discuss the limitations of the model. e.g.  disk breaking.}
+
 \section{Conclusions}
 \label{sec:conclusions}
 
@@ -330,15 +334,15 @@ Figure \ref{fig:fpol_j} shows this integral computed for a range of $j$. We see 
 
 
 
-\section{Acknowledgements}
+\begin{acknowledgements}
 \label{sec:ack}
 
-This manuscript was prepared using the open-science software \href{https://show-your.work/en/latest/intro/}{\showyourwork} \citep{luger2021}, making the article completely
+We acknowledge support from NASA through grants 80NSSC21K0395 and 80NSSC19K0443. This manuscript was prepared using the open-science software \href{https://show-your.work/en/latest/intro/}{\showyourwork} \citep{luger2021}, making the article completely
 reproducible. The source code to compile this document and create the figures is available on GitHub\footnote{\ghurl}.
-
-Simulations in this paper made use of the REBOUND N-body code \citep{rebound}.
+Simulations in this paper made use of the {\sc rebound} N-body code \citep{rebound}.
 The simulations were integrated using IAS15, a 15th order Gauss-Radau integrator \citep{reboundias15}. 
 
+\end{acknowledgements}
 
 \bibliography{cbdisk,syw,reb}
 

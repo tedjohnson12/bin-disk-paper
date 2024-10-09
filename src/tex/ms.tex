@@ -103,7 +103,15 @@ For a massive ring that is misaligned to the binary orbit there are two conditio
 \begin{equation}
     \chi = e_{\rm b}^2 - 2\,(1 - e_{\rm b}^2)\,j\,(2j + \cos{i})
 \end{equation}
-for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. \RGM{maybe include equations 32 and 38 in ML19 here?} These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
+for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. The condition for libration is
+\begin{equation}
+    \label{eq:lib_condition}
+        \begin{array}{lr}
+            -(1-e_\text{b}^2)(2j+\cos{i})^2 + 5e_\text{b}^2 \sin^2{i}\sin^2{\Omega} > 0 & \chi > 0 \\
+            e_\text{b}^2 + 4j(1-e_\text{b}^2)(-\cos{i} + j(-2+5\sin^2{i}\sin^2{\Omega})) > 0 & \chi < 0 .
+        \end{array}
+\end{equation}
+These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
 \begin{equation}
     \label{eq:omega_min}
     \sin^2{\Omega_{\rm min}} = 

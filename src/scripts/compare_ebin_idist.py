@@ -1,4 +1,5 @@
 
+from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm.auto import tqdm
@@ -13,7 +14,7 @@ import colors
 
 plt.style.use('bmh')
 
-OUTFILE = paths.figures / 'compare_ebin.pdf'
+OUTFILE = paths.figures / 'compare_ebin_idist.pdf'
 
 
 N_ANALYTIC = 400
@@ -24,7 +25,7 @@ N_OMEGA = 100
 N_GRID = 41
 ECCENTRICITIES_GRID = np.linspace(0.01,0.99,N_GRID)
 
-JS = [0.0,0.1,0.25,0.5,1.0,2.0,4.0]
+JS = [0.0,0.5,4.0]
 
 STATE_MAPPER = {
     'u':0,
@@ -68,6 +69,12 @@ def plot_analytic(_ax: plt.Axes):
     _ax.plot(ECCENTRICITIES_ANALYTIC, polar_fracs,
              c=colors.slate, label=f'{MartinLubow2019.citet},\n$j={helpers.represent_j(_j)}$',lw=3,ls=':')
 
+def get_jac(sigma: float) -> Callable[[np.ndarray],np.ndarray]:
+    def fun(x: np.ndarray) -> np.ndarray:
+        A = (1+sigma**2)/(sigma**2*(np.exp(-np.pi/sigma) + 1))
+        return A * np.sin(x) * np.exp(-x/sigma)
+    return fun
+
 def plot_ML19(_ax: plt.Axes,
               _j: float,
               _color: str,
@@ -75,9 +82,20 @@ def plot_ML19(_ax: plt.Axes,
               ):
     with warnings.catch_warnings():
         warnings.simplefilter('error')
-        polar_fracs = [MartinLubow2019.frac_polar(_j,e) for e in ECCENTRICITIES_ANALYTIC]
+        polar_fracs = [MartinLubow2019.frac_polar(_j,e,jacobian=get_jac(100)) for e in ECCENTRICITIES_ANALYTIC]
         _ax.plot(ECCENTRICITIES_ANALYTIC, polar_fracs,
              c=_color, label=_label)
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        polar_fracs = [MartinLubow2019.frac_polar(_j,e,jacobian=get_jac(np.pi/2)) for e in ECCENTRICITIES_ANALYTIC]
+        _ax.plot(ECCENTRICITIES_ANALYTIC, polar_fracs,
+             c=_color, label=_label+', $\\sigma=\\pi/2$',ls='--')
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        polar_fracs = [MartinLubow2019.frac_polar(_j,e,jacobian=get_jac(np.pi/8)) for e in ECCENTRICITIES_ANALYTIC]
+        _ax.plot(ECCENTRICITIES_ANALYTIC, polar_fracs,
+             c=_color, label=_label+', $\\sigma=\\pi/8$',ls=':')
+
 
 def run_grid(
     n_i:int,
@@ -136,6 +154,18 @@ if __name__ == "__main__":
     #     frac_crit[i] = run_grid(N_INC,N_OMEGA,e,jcrit)
     
     # ax.plot(eccentricities, frac_crit, c='k', label='$j_{crit}$',ls='--',lw=3)
+    
+    inax = ax.inset_axes([0.12, 0.62, 0.3, 0.3])
+    for s,ls in zip([100,np.pi/2,np.pi/8],['-','--',':']):
+        jac = get_jac(s)
+        x = np.linspace(0,1,100) * np.pi
+        y = jac(x)/np.sin(x)
+        inax.plot(x,y,c='k',ls=ls)
+    inax.set_xlim(0, np.pi)
+    inax.set_xticks([0,np.pi/2,np.pi])
+    inax.set_xticklabels([r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=10)
+    inax.set_ylabel('$p_i(i)/\\sin{(i)}$')
+    inax.set_xlabel('$i$')
     
     
     ax.set_xlabel('$e_{\\rm b}$',fontsize=14)

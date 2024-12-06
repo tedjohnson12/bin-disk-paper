@@ -22,11 +22,11 @@ GR = False
 j_crit = helpers.j_critical(eb)
 print(f'Critical relative angular momentum: {j_crit}')
 
-j = j_crit
+j = j_crit*0
 ap = 5*ab
 mp = helpers.get_mass_planet(j,mb,fb,eb,ab,ap,0)
 # i_arr = np.array([-0.99,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.99])*np.pi
-i_arr = np.array([-0.99])*np.pi
+i_arr = np.array([0.15,0.4,-0.4,0.85])*np.pi
 color = {
     system.UNKNOWN : colors.brown,
     system.PROGRADE: colors.yellow,
@@ -91,8 +91,8 @@ if __name__ == '__main__':
             arg_pariapsis_planet=0,
             gr=GR,
         )
-        sys.integrate_to_get_path(step=50, capture_freq=1,max_orbits=100000)
-        sys.integrate_orbits(n_orbits=400,capture_freq=1)
+        # sys.integrate_to_get_path(step=50, capture_freq=3,max_orbits=100000)
+        sys.integrate_orbits(n_orbits=800,capture_freq=3)
         
         phi = sys.lon_ascending_node - np.pi/2
         theta = sys.inclination

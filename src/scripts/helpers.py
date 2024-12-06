@@ -1,6 +1,7 @@
 """
 Heper functions common to the project
 """
+from typing import Callable
 import numpy as np
 
 def get_l_sq_bin(
@@ -138,6 +139,8 @@ def represent_j(_j: float) -> str:
     str
         The string representation of the relative angular momentum.
     """
+    if _j == 0:
+        return '0'
     is_small = _j < 0.01
     if is_small:
         is_power_of_ten = np.log10(_j) % 1 == 0
@@ -186,3 +189,9 @@ if __name__ == "__main__":
         e_planet=0.0
     )
           )
+
+def get_ijac(sigma: float) -> Callable[[np.ndarray],np.ndarray]:
+    def fun(x: np.ndarray) -> np.ndarray:
+        A = (1+sigma**2)/(sigma**2*(np.exp(-np.pi/sigma) + 1))
+        return A * np.sin(x) * np.exp(-x/sigma)
+    return fun

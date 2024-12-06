@@ -148,7 +148,12 @@ def do_search(ecc:float, _mass: float):
     _transitions = _searcher.search()
     return _transitions
 
-def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float, omega:float = np.pi/2,capture_freq=1):
+def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float, omega:float = np.pi/2,capture_freq=1,
+              true_anomaly=NU,
+              arg_pariapsis=ARG_PARIAPSIS,
+              eccentricity_planet=ECC_PLANET,
+              gr=GR,
+              a_factor=1.0):
     """
     Plot the full path for a particular setup.
     
@@ -168,17 +173,18 @@ def plot_full(_ax: plt.Axes, ecc: float, inclination:float,_mass: float, omega:f
         mass_fraction=FRAC_BINARY,
         semimajor_axis_binary=SEP_BINARY,
         eccentricity_binary=ecc,
-        mass_planet=_mass,
-        semimajor_axis_planet=SEP_PLANET,
+        mass_planet=_mass/np.sqrt(a_factor),
+        semimajor_axis_planet=SEP_PLANET * a_factor,
         inclination_planet=inclination,
         lon_ascending_node_planet=omega,
-        true_anomaly_planet=NU,
-        eccentricity_planet=ECC_PLANET,
-        arg_pariapsis_planet=ARG_PARIAPSIS,
-        gr=GR,
+        true_anomaly_planet=true_anomaly,
+        eccentricity_planet=eccentricity_planet,
+        arg_pariapsis_planet=arg_pariapsis,
+        gr=gr,
         sim=None
     )
-    sys.integrate_to_get_path(step=5,max_orbits=10000,capture_freq=1)
+    sys.integrate_to_get_path(step=5,max_orbits=10000,capture_freq=capture_freq)
+    # sys.integrate_orbits(n_orbits=1000,capture_freq=capture_freq)
     incls = sys.inclination
     lon_asc_node = sys.lon_ascending_node
     x = incls*np.cos(lon_asc_node)
@@ -214,8 +220,15 @@ def plot_discrepancy(_ax: plt.Axes, _ax_polar: plt.Axes,_sampler: mc.Sampler):
         x,y,z = init_xyz(i,omega)
         _,_,_,_,_,_s = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
         if s != _s and s != 'u':
-            plot_full(_ax, ECC_BIN, i, MASS_PLANET,omega,capture_freq=20)
-            _ax_polar.scatter(omega, i, c='k', s=5,marker='X',zorder=100)
+            print(f'omega={omega}, i={i}, s={s}, _s={_s}')
+            # plot_full(_ax, ECC_BIN, i, MASS_PLANET,omega,capture_freq=20)
+            # _ax_polar.scatter(omega, i, c='k', s=5,marker='X',zorder=100)
+
+def plot_audit(_ax: plt.Axes, _ax_polar: plt.Axes, i: float, omega: float):
+    _ax_polar.scatter(omega, i, c='k', s=5,marker='X',zorder=100)
+    for f in [0.6,1]:
+        print(f)
+        plot_full(_ax, ECC_BIN,i,MASS_PLANET,omega,capture_freq=2.,a_factor=f)
         
 
 if __name__ in '__main__':
@@ -310,6 +323,14 @@ if __name__ in '__main__':
         f.write(f'{frac_low:.2f}')
     with open(rk_err,'w',encoding='utf-8') as f:
         f.write(f'10^{{{round(np.log10(error)):.0f}}}')
+    
+    # audit_i = [3.013643]
+    audit_i = [0.88]
+    audit_omega = [4.068365]
+    audit_omega = [np.pi/2]
+    # for i,omega in zip(audit_i,audit_omega):
+    #     plot_audit(ax_cartesian,ax_polar,i,omega)
+    
     
     
     fig.savefig(OUTFILE)

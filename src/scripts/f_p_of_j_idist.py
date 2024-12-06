@@ -18,7 +18,7 @@ import colors
 
 plt.style.use('bmh')
 
-OUTFILE = paths.figures / 'fpol_j.pdf'
+OUTFILE = paths.figures / 'fpol_j_idist.pdf'
 
 N_E_ANALYTIC = 101
 N_I_ANALYTIC = 101
@@ -47,7 +47,8 @@ def flat_cutoff_prob_e(x:float) -> Callable[[float],float]:
     return func
 
 def prob_analytic(j: float,
-                  prob_e = prob_e(0)
+                  prob_e = prob_e(0),
+                  jacobian = lambda x: 0.5*np.sin(x)
                   ) -> float:
     """
     Compute the polar fraction assuming isotropic angular momentum distribution and random eccentricity.
@@ -55,7 +56,7 @@ def prob_analytic(j: float,
     Uses Martin & Lubow 2019.
     """
     
-    polar_fracs = [MartinLubow2019.frac_polar(j,e,N_I_ANALYTIC) for e in ECCENTRICITIES]
+    polar_fracs = [MartinLubow2019.frac_polar(j,e,N_I_ANALYTIC,jacobian) for e in ECCENTRICITIES]
     weights = prob_e(ECCENTRICITIES)
     fp  = simpson(y=polar_fracs*weights,x=ECCENTRICITIES)
     return fp
@@ -69,11 +70,12 @@ if __name__ == "__main__":
     fig.subplots_adjust(right=0.7)
     inax = ax.inset_axes([0.6, 0.15, 0.2, 0.2])
     
-    def plot(func,color,label):
+    def plot(func,color,label,ls,sigma=-1):
         fps = []
+        jacobian = (lambda x: 0.5*np.sin(x)) if sigma == -1 else helpers.get_ijac(sigma)
         for j in tqdm(JS):
-            fps.append(prob_analytic(j,prob_e=func))
-        ax.plot(JS, fps, c=color, label=label)
+            fps.append(prob_analytic(j,prob_e=func,jacobian=jacobian))
+        ax.plot(JS, fps, c=color, label=label,ls=ls)
         inax.plot(ECCENTRICITIES, func(ECCENTRICITIES), c=color)
     def plot_single(e,color,label):
         fps = []
@@ -81,18 +83,24 @@ if __name__ == "__main__":
             fps.append(single_e_analytic(j,e))
         ax.plot(JS, fps, c=color, label=label,ls='--')
         
+    for ls,s in zip(['-','--',':'],[-1,np.pi/2,np.pi/8]):
+        label_suffix = {
+            -1: ', isotropic',
+            np.pi/2: ', $\\sigma=\\pi/2$',
+            np.pi/8: ', $\\sigma=\\pi/8$'
+        }[s]
+        
+        plot(prob_e(1),colors.dark_orange,'Thermal'+label_suffix,ls,s)
+        
+        plot(prob_e(0),colors.yellow,'Uniform'+label_suffix,ls,s)
+        
+        # plot(rev_prob_e(1),colors.teal,'Inverse Thermal')
+        
+        plot(flat_cutoff_prob_e(0.1),colors.teal,'$e_{\\rm b} < 0.1$'+label_suffix,ls,s)
     
-    plot(prob_e(1),colors.dark_orange,'Thermal')
-    
-    plot(prob_e(0),colors.yellow,'Uniform')
-    
-    # plot(rev_prob_e(1),colors.teal,'Inverse Thermal')
-    
-    plot(flat_cutoff_prob_e(0.1),colors.teal,'$e_{\\rm b} < 0.1$')
-    
-    for e in [0.01,0.3,0.5,0.7,0.99]:
-        color = plt.cm.viridis(e)
-        plot_single(e,color,f'$e_{{\\rm b}} = {e:.2f}$')
+    # for e in [0.01,0.3,0.5,0.7,0.99]:
+    #     color = plt.cm.viridis(e)
+    #     plot_single(e,color,f'$e_{{\\rm b}} = {e:.2f}$')
     
     
     ax.axhline(0.37, ls='--', c=colors.slate, label='Kozai-Lidov')

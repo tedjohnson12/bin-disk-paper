@@ -59,8 +59,8 @@ host stars. \RGM{For a massless} circumbinary disk, the type of nodal precession
         is slightly misalignend, its own angular momentum vector precesses about that of the binary \citep[e.g.,][]{bate2000,lubow2000}.
         This is characterized by near constant
         inclination and oscillation of the longitude of the ascending node. Included in this case is the subclassification
-        of retrograde orbits (those whose angular momentum vectors are misaligend by $\sim 180 \deg$) and the two
-        trivial cases of perfectly aligned/misaligend orbits which do not precess. \label{enum:precession}
+        of retrograde orbits (those whose angular momentum vectors are misaligned by $\sim 180 \deg$) and the two
+        trivial cases of perfectly aligned/misaligned orbits which do not precess. \label{enum:precession}
     \item {\bf Libration about the eccentricity vector of the binary.} In the case where misalignment is high (i.e. near
     perpendicular) the angular momentum vector of the planet/disk precesses about the eccentricity vector of the binary 
     \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. This is called a librating orbit. In this case the mutual inclination of the disk oscillates about the polar configuration.
@@ -346,27 +346,54 @@ where $h\equiv H/r$ is the disk aspect ratio, $f\equiv M_2/M$ is the mass ratio,
 \begin{equation}
     t_\text{evol} \propto e_\text{b}^{-4}
 \end{equation}
-when $e_\text{b}$ is small. This suggests that near-circular binaries are much more likely to host misaligend disks that are neither polar nor coplanar. In fact, if it is common for planets to transit eclipsing circular binary systems, then 1) the constant of proportionality in equation (\ref{eq:tevol}) must be very small, or 2) there must be a strong preference for coplanar formation of the disk, or 3) there must be a tendency for circularization of the binary on a longer timescale than $t_\text{evol}$. To date, all known circumbinary planets orbit systems with $a_\text{b} < 1\text{AU}$, some with low eccentricity ($e_\text{b}<0.1$) \TJ{(Cite original papers as well as look at table 1 of \citet{martin2021})}. The low separation of the host binaries is likely a selection effect, as short period transits are much more likely to be detected. \TJ{(Say something else.)}
+when $e_\text{b}$ is small. This suggests that near-circular binaries are much more likely to host misaligned disks that are neither polar nor coplanar. In fact, if it is common for planets to transit eclipsing circular binary systems, then 1) the constant of proportionality in equation (\ref{eq:tevol}) must be very small, or 2) there must be a strong preference for coplanar formation of the disk, or 3) there must be a tendency for circularization of the binary on a longer timescale than $t_\text{evol}$. To date, all known circumbinary planets orbit systems with $a_\text{b} < 1\text{AU}$, some with low eccentricity ($e_\text{b}<0.1$) \TJ{(Cite original papers as well as look at table 1 of \citet{martin2021})}. The low separation of the host binaries is likely a selection effect, as short period transits are much more likely to be detected. \TJ{(Say something else.)}
 
 We can further constrain the evolution timescale if we decide that it must not be shorter than the precession timescale, and is likely of similar order. \citet[see eq. (2.32)]{farago2010} give an analytic expression for the precession period of a test particle orbiting an eccentric binary, which we write in our own variables as
 \begin{equation}
-    t_\text{p} = \frac{16}{3f(1-f)} \Omega_\text{b}^{-1} \left(\frac{r}{a_\text{b}}\right)^{7/2} g(e_\text{b},i,\Omega)\, ,
+    t_\text{p} = \frac{16}{3f(1-f)} \Omega_\text{b}^{-1} \left(\frac{r}{a_\text{b}}\right)^{7/2} \Gamma_1(e_\text{b},i,\Omega)\, ,
 \end{equation}
-where $\Omega_\text{b}$ is the binary orbital frequency and $g$ is a dimensionless constant that depends on the initial conditions:
+where $\Omega_\text{b}$ is the binary orbital frequency and $\Gamma_1$ is a dimensionless constant that depends on the initial conditions:
 \begin{equation}
-    g(e_\text{b},i,\Omega) = \frac{K(k^2)}{\sqrt{(1-e_\text{b}^2)(h+4e_\text{b}^2)}} \, .
+    \Gamma_1(e_\text{b},i,\Omega) = \frac{K(k^2)}{\sqrt{(1-e_\text{b}^2)(h+4e_\text{b}^2)}} \, .
 \end{equation}
 $k^2$ and $h$ are constants that \citet{farago2010} define in their equations (2.31) and (2.20), respectively. $K(k^2)$ is the elliptic integral of the first kind, which \citet{farago2010} gives in equation (2.33).
 
-Note that $g$ depends on $e_\text{b}$, and so it is only a constant in the case of a test particle. For $j>0$, we must compute the precession timescale ourselves. The time coordinate used in Section \ref{sec:rk} is $\tau \equiv \alpha' t$. $\alpha'$ is defined by \citet[see eq. 3.9]{farago2010}, and we write it as
+Note that $\Gamma_1$ depends on $e_\text{b}$, and so it is only a constant in the case of a test particle. For $j>0$, we must compute the precession timescale ourselves. The time coordinate used in Section \ref{sec:rk} is $\tau \equiv \alpha' t$. $\alpha'$ is defined by \citet[see eq. 3.9]{farago2010}, and we write it as
 \begin{equation}
-    \alpha' \equiv \frac{3}{4} \Omega_\text{b} \left(\frac{a_\text{b}}{r}\right)^{7/2} f(1-f) \sqrt{1+f}\, .
+    \alpha' \equiv \frac{3}{4} \Omega_\text{b} \left(\frac{a_\text{b}}{r}\right)^{7/2} f(1-f) \,\Gamma_2(j,f,a_\text{b}/a_\text{r}, e_\text{b}) \, ,
 \end{equation}
+where we have written the $\sqrt{1+m_\text{r}/M_\text{b}}$ factor as $\Gamma_2$. Written in terms of our variables, this expression is very complicated, and we choose to compute it numerically for simplicity. Note, however, that except for extremely large $j$ (e.g. $>10$), $\Gamma_2 \sim 1$.
 
 Given some precession timescale in code units $\tau_\text{p}$, we can calculate the precession timescale
 \begin{equation}
-    t_\text{p} = \frac{4}{3}\Omega_\text{b}^{-1} \left(\frac{r}{a_\text{b}}\right)^{7/2} \frac{\tau_\text{p}}{f(1-f)\sqrt{1+f}}
+    t_\text{p} = \frac{4}{3}\Omega_\text{b}^{-1} \left(\frac{r}{a_\text{b}}\right)^{7/2} \frac{\tau_\text{p}}{f(1-f)\Gamma_2}\, .
 \end{equation}
+
+Compared to the precession timescale for a test particle, that is
+\begin{equation}
+    \label{eq:tp-rat}
+    \frac{t_{\text{p,}j}}{t_{\text{p,}j=0}} = \frac{\tau_\text{p}}{4\,\Gamma_1\,\Gamma_2} \, .
+\end{equation}
+
+\begin{figure}
+    \includegraphics[width=0.5\textwidth]{figures/precession_time.pdf}
+    \caption{
+        Effect of $j$ on the precession timescale as calculated in equation (\ref{eq:tp-rat}). {\bf Top}: Ratio between the numerically computed precession timescale and the analytic solution for a massless ring. To compute the solid lines, the inclination is fixed and only $j$ varies. Twice the orbit switches between circulation and libration, and the timescale becomes very long at that boundary. For the dashed lines, $i$ is held $5^\circ$ away from a stationary point. In the librating case, this stationary point is given by equation (15) of \citet{martin2019}. In the prograde case, the stationary point is coplanar. For all simulations the step size is $\Delta j = 10^{-3}$, and we assume $e_\text{b}=0.4$, $f=0.5$, $a_\text{b}/r = 1/5$, and $\Omega_0 = \pi/2$. {\bf Bottom}: $(i,\Omega)$ tracks for all 2000 simulations that compose the solid line in the top panel. The arrow points to the initial conditions for every line. The divergence of the different tracks is due to the change of $j$ only.
+    }
+    \script{precession_time.py}
+    \label{fig:t_p}
+\end{figure}
+
+Figure \ref{fig:t_p} shows that $j$ has two different effects on $t_\text{p}$. The most obvious is that when $j$ changes, the location of the boundary between dynamical regimes also changes. This can cause huge spikes in the timescale ratio as that boundary moves close to the initial conditions $(i_0, \Omega_0)$. The other effect is that the timescale ratio becomes small as $j$ increases.\TJ{I am fairly sure this can be explained by showing that the Kozai-Lidov timescale is proportional to $1/j$, but I have not found a good enough reference yet.}
+
+Given some set of assumptions, we can calculate the fraction of binary systems for which the precession timescale is too long to reach a coplanar or polar orbit. Planets formed in these disks will undergo secular oscillations for the entire lifetime of their system. This fraction is a strong function of the radius of the ring, and differential precession of an extended disk will cause warps and breaks (see Section \ref{subsec:breaks})
+
+\begin{figure}
+    \includegraphics[width=0.5\textwidth]{figures/grid_example_tp.pdf}
+    \caption{Same as Figure \ref{fig:grid_example}, but with a mask over the region where $t_\text{p} > t_\text{disk}$. Parameters used are an equal-mass binary with $M_\text{b} = M_\odot$, $e_\text{b} = 0.1$, $a_\text{b} = 1\text{ AU}$, $r/a_\text{b} = 30$, and $t_\text{disk} = 10^6 \text{ years}$. Note that \variable{output/grid_example_tp.txt}\% of initial conditions remain misaligned in this setup, but this fraction is near zero when $r/a_\text{b} = 20$ and near 1 when $r/a_\text{b} = 40$.}
+    \script{grid_example_tp.py}
+    \label{fig:grid-tp}
+\end{figure}
 
 
 

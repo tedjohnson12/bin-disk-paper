@@ -2,8 +2,8 @@ dependencies:
   - python==3.11
   - pip
   - pip:
-      - matplotlib==3.4.3
       - numpy<2.0.0
+      - matplotlib
       - git+https://github.com/tedjohnson12/polar-disk-freq.git@main
       - rebound
       - reboundx

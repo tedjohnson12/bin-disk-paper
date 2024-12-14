@@ -4,6 +4,8 @@ Heper functions common to the project
 from typing import Callable
 import numpy as np
 
+from polar_disk_freq.rk4 import get_i
+
 def get_l_sq_bin(
         m_bin:float,
         f_bin:float,
@@ -177,6 +179,28 @@ def j_critical(e_bin: float) -> float:
     num = 1 + 4*e_bin**2
     den = 2 + 3*e_bin**2
     return num/den
+
+def get_stationary_inclination(j: float, eb: float) -> float:
+    """
+    The stationary inclination from Martin & Lubow 2019 eq 15.
+    
+    Parameters
+    ----------
+    j : float
+        The relative angular momentum.
+    eb : float
+        Binary eccentricity.
+    
+    Returns
+    -------
+    float
+        The stationary inclination.
+    """
+    if j == 0:
+        return np.pi/2
+    lz = (-(1+4*eb**2) + np.sqrt( (1+4*eb**2)**2 + 60*(1-eb**2)*j**2 ) ) / (10*j)
+    return np.arccos(lz)
+    
 
 if __name__ == "__main__":
     print(get_mass_planet(

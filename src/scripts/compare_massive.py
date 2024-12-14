@@ -290,8 +290,8 @@ if __name__ in '__main__':
     frac_low = None
     frac_high = None
     for _i,(n, m) in enumerate(zip([400,800],[400,800])):
-        i_arr = np.linspace(0,np.pi,n,endpoint=False)
-        omega_arr = np.linspace(0,2*np.pi,m)
+        i_arr = np.linspace(0,np.pi,n+1,endpoint=True)
+        omega_arr = np.linspace(0,2*np.pi,m+1)
         state_arr = np.zeros((n,m),dtype=int)
         gamma = get_gamma(ECC_BIN,J)
         state_mapper = {
@@ -300,20 +300,24 @@ if __name__ in '__main__':
             'l':2,
             'r':3
         }
-        for _n, i in tqdm(enumerate(i_arr),desc='Running grid',total=n):
-            for _m, omega in enumerate(omega_arr):
+        for _n, (i0,i1) in tqdm(enumerate(zip(i_arr[:-1],i_arr[1:])),total=n):
+            for _m, (omega0,omega1) in enumerate(zip(omega_arr[:-1],omega_arr[1:])):
+                i = (i0+i1)/2
+                omega = (omega0+omega1)/2
                 x,y,z = init_xyz(i,omega)
-                _,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
+                _,_,_,_,_,_,state = integrate(0,0.01,x,y,z,ECC_BIN,gamma,1.0,1e-10)
                 state_arr[_n,_m] = state_mapper[state]
+        i_cen = 0.5*(i_arr[:-1]+i_arr[1:])
+        omega_cen = 0.5*(omega_arr[:-1]+omega_arr[1:])
         
-        ax_polar.contour(omega_arr,i_arr,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
+        ax_polar.contour(omega_cen,i_cen,state_arr,levels=[0.5,1.5,2.5],colors=['k','k','k','k'],linewidths=1.5)
         
-        oo,ii = np.meshgrid(omega_arr,i_arr)
+        oo,ii = np.meshgrid(omega_cen,i_cen)
         area = np.sin(ii)
         is_polar = state_arr==state_mapper['l']
         integrand2d = area*is_polar
-        integrand1d = simpson(y=integrand2d,x=omega_arr,axis=1)
-        frac = simpson(y=integrand1d,x=i_arr)/(4*np.pi)
+        integrand1d = simpson(y=integrand2d,x=omega_cen,axis=1)
+        frac = simpson(y=integrand1d,x=i_cen)/(4*np.pi)
         if _i == 0:
             frac_low = frac
         else:

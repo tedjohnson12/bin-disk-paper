@@ -2,13 +2,11 @@
 Find the precession timescale compared to the massless case.
 """
 import numpy as np
-from scipy.special import ellipkinc, ellipk
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
-from matplotlib.patches import Arrow
-from scipy.optimize import newton
 
 from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma, get_i, get_omega
+from polar_disk_freq.precession import get_tp_over_tpj0
 from helpers import j_critical, get_stationary_inclination
 import paths
 import colors
@@ -27,81 +25,6 @@ STATE_MAPPER = {
     'l':2,
     'r':3
 }
-def get_h(eb:float,i0: float, omega0: float):
-    """
-    Farago & Laskar 2010 eq 2.20
-    """
-    lx, ly, lz = init_xyz(i0,omega0)
-    return lz**2 - eb**2 * (4*lx**2 - ly**2)
-
-def get_k_sq(eb:float,i0: float, omega0: float):
-    """
-    Farago & Laskar 2010 eq 2.31
-    """
-    h = get_h(eb,i0,omega0)
-    return 5 * eb**2 / (1-eb**2) * (1-h)/(h+4*eb**2)
-
-def elliptic_integral(k_sq: float):
-    """
-    Farago & Laskar 2010 eq 2.33
-    """
-    if k_sq == 1:
-        raise ValueError('k^2 = 1')
-    if k_sq < 1:
-        return ellipk(k_sq)
-    else:
-        # Note the scipy implementation does not allow k > 1, so we have to do this rescaling
-        k = np.sqrt(k_sq)
-        return 1/k * ellipkinc(np.arcsin(1),1/k)
-
-def get_gamma_1(
-    eb: float,
-    i0: float,
-    omega0:float
-):
-    """
-    Last part of Farago & Laskar 2010 eq 2.32
-    """
-    k_sq = get_k_sq(eb,i0,omega0)
-    h = get_h(eb,i0,omega0)
-    big_k = elliptic_integral(k_sq)
-    return big_k * 1 / np.sqrt( (1-eb**2) * (h + 4*eb**2) )
-
-def get_gamma_2(
-    j: float,
-    f: float,
-    ab_ap: float,
-    eb: float,
-):
-    """
-    The $\\sqrt{1+m_r/M_b}$ term
-    """
-    d = j * f * (1-f) * np.sqrt(ab_ap * (1-eb**2))
-    def func(beta: float) -> float:
-        return beta**3 - beta - d
-    guess = 1
-    return newton(func,guess)
-    
-    
-
-def get_tau(eb:float,j:float,i0: float, omega0: float):
-    """
-    Get the precession timescale
-    """
-    x,y,z = init_xyz(i0,omega0)
-    gamma = get_gamma(eb,j)
-    _,_,_,_,_,tau,state = integrate(TAU_INIT,DTAU_INIT,x,y,z,eb,gamma,WALLTIME,epsilon=EPSILON)
-    
-    return tau, state
-
-def get_ratio(eb:float,j:float,i0: float, omega0: float,fb:float,ab_ap:float):
-    """
-    Get the precession timescale ratio
-    """
-    tau,_state = get_tau(eb,j,i0,omega0)
-    g1 = get_gamma_1(eb,i0,omega0)
-    g2 = get_gamma_2(j, fb, ab_ap, eb)
-    return tau/(4*g1*g2), _state
 
 if __name__ == '__main__':
     f = 0.5
@@ -121,7 +44,8 @@ if __name__ == '__main__':
     rats = np.zeros(len(js))
     states = np.zeros(len(js),dtype=int)
     for i,j in enumerate(tqdm(js)):
-        rat, state = get_ratio(eb,j,i0,omega0,f,ab_ap)
+        rat, state = get_tp_over_tpj0(eb,j,i0,omega0,f,ab_ap,
+                                      TAU_INIT,DTAU_INIT,WALLTIME,EPSILON)
         x,y,z = init_xyz(i0,omega0)
         gamma = get_gamma(eb,j)
         _,lx,ly,lz,_,_,_ = integrate(TAU_INIT,DTAU_INIT,x,y,z,eb,gamma,WALLTIME,epsilon=EPSILON)
@@ -152,7 +76,8 @@ if __name__ == '__main__':
     states = np.zeros(len(js),dtype=int)
     for i,j in enumerate(tqdm(js)):
         i0 = get_stationary_inclination(j,eb) - fivedeg
-        rat, state = get_ratio(eb,j,i0,omega0,f,ab_ap)
+        rat, state = get_tp_over_tpj0(eb,j,i0,omega0,f,ab_ap,
+                                      TAU_INIT,DTAU_INIT,WALLTIME,EPSILON)
         x,y,z = init_xyz(i0,omega0)
         gamma = get_gamma(eb,j)
         _,lx,ly,lz,_,_,_ = integrate(TAU_INIT,DTAU_INIT,x,y,z,eb,gamma,WALLTIME,epsilon=EPSILON)
@@ -181,7 +106,8 @@ if __name__ == '__main__':
     states = np.zeros(len(js),dtype=int)
     for i,j in enumerate(tqdm(js)):
         i0 =  fivedeg
-        rat, state = get_ratio(eb,j,i0,omega0,f,ab_ap)
+        rat, state = get_tp_over_tpj0(eb,j,i0,omega0,f,ab_ap,
+                                      TAU_INIT,DTAU_INIT,WALLTIME,EPSILON)
         x,y,z = init_xyz(i0,omega0)
         gamma = get_gamma(eb,j)
         _,lx,ly,lz,_,_,_ = integrate(TAU_INIT,DTAU_INIT,x,y,z,eb,gamma,WALLTIME,epsilon=EPSILON)

@@ -366,6 +366,7 @@ where we have written the $\sqrt{1+m_\text{r}/M_\text{b}}$ factor as $\Gamma_2$.
 
 Given some precession timescale in code units $\tau_\text{p}$, we can calculate the precession timescale
 \begin{equation}
+    \label{eq:tp-j}
     t_\text{p} = \frac{4}{3}\Omega_\text{b}^{-1} \left(\frac{r}{a_\text{b}}\right)^{7/2} \frac{\tau_\text{p}}{f(1-f)\Gamma_2}\, .
 \end{equation}
 
@@ -395,14 +396,69 @@ Given some set of assumptions, we can calculate the fraction of binary systems f
     \label{fig:grid-tp}
 \end{figure}
 
+\subsection{Disk breaking}
+\label{subsec:breaks}
+\citet{rabago2024} provides a framework for discussing extended disks which form discontinuities in $i$ and $\Omega$ due to differential precession and libration. Essentially, the dominant timescale in such a disk is that at the inner edge (recall in equation (\ref{eq:tp-j}) that $t_\text{p} \propto r^{7/2}$).
+In a wave-like (low-viscosity) disk, the break occurs at the radius where the inner edge precession timescale is equal to the radial communication timescale. In the diffusive (high-viscosity) disk regime, however, the alignment timescale is very short compared to the precession timescale, and it is possible for the disk to reach coplanar or polar alignment without very much differential precession, suppressing any potential warps. It is still possible, however, for this fast alignment to take longer than a disk lifetime, and we cannot guarantee that all diffusive disks with be able to evolve to coplanar or polar -- only that they are less likely to break.
 
+Consider now a wave-like disk with inner radius $r_\text{in}$ and outer radius $r_\text{out}$. If $r_\text{out}$ is sufficiently large, then a break will occur at a radius $r_\text{break}$ that depends on the specific parameters of the disk \citep[see][eq. (9)]{rabago2024}. The two regions can be treated independently of each other. For the inner disk, the outer edge is sufficiently connected to the inner edge, and the whole region precesses together on a characteristic timescale $t_\text{p}(r_\text{in}) < t_\text{p} \lesssim t_\text{p}(r_\text{break})$. The outer disk may break again if $r_\text{out}$ is very large, but either way it will precess on its own characteristic timescale. We now have two independent rings, each with its own precession timescale. Due to the strong dependence of $t_\text{p}$ on $r$, the inner disk is much more likely to reach alignment in a disk lifetime, and the different alignment timescales means the disks will be misaligned from each other, potentially causing a shadow to be cast on the outer disk \citep[see][\TJ{and others}]{benisty2023,su2024,zhang2024}.
 
+\subsection{Self-gravitation}
+\label{subsec:toomre}
+Just as the disk-breaking framework in Section \ref{subsec:breaks} places an upper limit on the outer radius of an extended disk, we can use the gravitational instability criterion to place a lower limit on that outer radius for constant $j$. This discussion applies to any disk that one may wish to describe with the dimensionless relative angular momentum $j$, not just misaligned disk we have focused on so far. The criterion for stability against self-gravitation \citet{toomre1964} can be written
+\begin{equation}
+    \label{eq:toomre}
+    \frac{hM_\text{b}}{\pi r^2 \Sigma} > 1\, ,
+\end{equation}
+where $h\equiv H/r$ is the aspect ratio of the disk and $\Sigma$ is the surface density. If $\Sigma = \Sigma_\text{in} (r/r_\text{in})^{-p}$ and $p>0$, then the angular momentum of the ring (in the limit $M_\text{r} \ll M_\text{b}$) is
+\begin{align}
+    J_\text{r} &= \int_{r_\text{in}}^{r_\text{out}} 2\pi r \Sigma  \sqrt{GM_\text{b}r}\,dr \, , \nonumber \\
+    & = \frac{2\pi\sqrt{GM_\text{b}}}{5/2 - p} \Sigma_\text{in} r_\text{in}^{5/2} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right)\, \label{eq:Jr}.
+\end{align}
 
-% \citet{rabago2024} gives the timescale for nodal precession of a thin ring to be
-% \begin{equation}
-%     t_\text{p} = \frac{1}{k} \left( \frac{r}{a_\text{b}} \right)^{7/2} t_\text{b}
-% \end{equation}
-% where $t_\text{b}$ is the binary orbital timescale, $r$ is the radius of the ring, and $k$ is a scaling factor that depends on the mass fraction and binary eccentricity. $|k| < 1$ \citep[see their equation (11), also][]{lubow2018,smallwood2019}, and, for a circumbinary disk, $r > a_\text{b}$. 
+First, we rewrite the stability criterion given in equation (\ref{eq:toomre}):
+\begin{equation}
+    \label{eq:toomre2}
+    \frac{h M_\text{b}}{\pi r_\text{in}^p \Sigma_\text{in} r^{2-p}} > 1\, .
+\end{equation}
+
+Looking at equation (\ref{eq:Jr}) and equation (3) of \citet{abod2022}, we can write $j$ as
+\begin{equation}
+    j = \frac{2\pi}{(5/2-p)f(1-f)M_\text{b}\sqrt{a_\text{b}(1-e_\text{b}^2)}} \Sigma_\text{in} r_\text{in}^{5/2} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right) \, .
+\end{equation}
+
+The location of the instability depends on $p$ as shown in equation \ref{eq:toomre2}. When $p<2$ it is at the inner edge, when $p>2$, at the outer edge, and can onset globally if $p=2$.
+
+\subsubsection{$p<2$}
+\label{subsubsec:shallow-p}
+For a shallow power law disk we evaluate at the inner edge. There is a maximum value for $\Sigma_\text{in}$:
+\begin{equation}
+    \Sigma_\text{max} = \frac{hM_\text{b}}{\pi r_\text{in}^2}\, .
+\end{equation}
+
+The maximum value of $j$ to be stable against self-gravity is
+\begin{equation}
+    \label{eq:jmax-shallow}
+    j_\text{max} = \frac{2h}{f (1-f) (5/2 - p)\sqrt{1-e_\text{b}^2}} \sqrt{\frac{r_\text{in}}{a_\text{b}}} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right)
+\end{equation}
+
+If we consider a $p=1$ disk orbiting an equal mass binary with $e_\text{b}=0.4$ and $r_\text{in}/a_\text{b}=5$, then for a relatively thin ring ($r_\text{out}/r_\text{in} = 2$), we calculate $j_\text{max} = 0.24$. If the disk is allowed to be more extended (in this case $r_\text{out}/r_\text{in} = 10$), then we find $j_\text{max} = 4.0$.
+
+\subsubsection{$p>2$}
+If the surface density power law is sufficiently steep (and not equal to $5/2$), then instability will arise at the outer edge. The maximum surface density at the inner edge becomes
+\begin{equation}
+    \Sigma_\text{max} = \frac{h M_\text{b}}{\pi r_\text{in}^2 (r_\text{out}/r_\text{in})^{2-p}}\, ,
+\end{equation}
+and the maximum angular momentum is
+\begin{equation}
+    \label{eq:jmax-steep}
+    j_\text{max} = \frac{2h}{f (1-f) (5/2 - p)\sqrt{1-e_\text{b}^2}} \sqrt{\frac{r_\text{in}}{a_\text{b}}} \left( \frac{r_\text{out}}{r_\text{in}}\right)^{2-p} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right) \, .
+\end{equation}
+
+Note that equation (\ref{eq:jmax-steep}) is less than equation ({\ref{eq:jmax-shallow}}) by a factor of $(r_\text{out}/r_\text{in})^{2-p}$. If we consider the same example as in Section \ref{subsubsec:shallow-p}, except with $p=3$, we find that in the thin case ($r_\text{out}/r_\text{in} = 2$), $j_\text{max} = 0.057$, and is even smaller for $r_\text{out}/r_\text{in} = 10$, at  $j_\text{max} = 0.027$.
+
+\subsubsection{$p=2$}
+Equations (\ref{eq:jmax-shallow} \& \ref{eq:jmax-steep}) are equivalent when $p=2$, and both analyses are equally valid. The qualitative change that occurs when $p=2$ is that instability does not onset at either disk edge, but is independent of radius and occurs everywhere simultaneously. Again, following the example parameters listed above, we find that $j_\text{max} = 0.16$ for $r_\text{out}/r_\text{in} = 2$ and $j_\text{max} = 0.84$ for $r_\text{out}/r_\text{in} = 10$.
 
 
 \section{Conclusions}

@@ -13,8 +13,9 @@ import helpers
 import colors
 
 from polar_disk_freq import system, mc, search
-from polar_disk_freq.utils import STATE_LONG_NAMES
 from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma
+
+
 
 plt.style.use('bmh')
 
@@ -30,6 +31,13 @@ DB_PATH = paths.data / 'mc.db'
 mc_out = paths.output/'mc_out.txt'
 rk_out = paths.output/'rk_out.txt'
 rk_err = paths.output/'rk_err.txt'
+
+STATE_LONG_NAMES = {
+    system.UNKNOWN : 'Unknown',
+    system.PROGRADE: 'Prograde',
+    system.RETROGRADE: 'Retrograde',
+    system.LIBRATING: 'Librating'
+}
 
 
 MASS_BINARY = 1

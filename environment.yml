@@ -6,6 +6,6 @@ dependencies:
       - matplotlib
       - git+https://github.com/tedjohnson12/polar-disk-freq.git@main
       - rebound
-      - reboundx
+      - reboundx==4.1.0
       - tqdm
       - scipy

@@ -6,11 +6,10 @@ from tqdm.auto import tqdm
 from scipy.integrate import simpson
 
 from polar_disk_freq.rk4 import integrate, init_xyz, get_gamma
+from polar_disk_freq.precession import get_gamma_2
 
-import helpers
 import paths
 import colors
-from precession_time import get_gamma_2
 
 plt.style.use('bmh')
 
@@ -22,6 +21,14 @@ TAU_INIT = 0.0
 DTAU_INIT = 0.01
 WALLTIME = 1 # seconds per run (usually 1/50,000 s)
 EPSILON = 1e-12 # Error allowance for integration
+
+E_BIN = 0.4
+J = 0.1
+T_DISK = 1e6
+AP_OVER_AB = 30
+FB = 0.5
+OMEGA_B = 2*np.pi
+
 STATE_MAPPER = {
     'u':0,
     'p':1,
@@ -71,12 +78,7 @@ def run_grid(
 if __name__ == '__main__':
     N_INC = 100
     N_OMEGA = 101
-    E_BIN = 0.4
-    J = 0.1
-    T_DISK = 1e6
-    AP_OVER_AB = 30
-    FB = 0.5
-    OMEGA_B = 2*np.pi
+    
     i_arr, omega_arr,frac, state_arr, tau_p_arr = run_grid(N_INC,N_OMEGA,E_BIN,J)
     
     tp = 4/3 / OMEGA_B * AP_OVER_AB**(7/2) * tau_p_arr / FB / (1-FB) / get_gamma_2(J,FB,1/AP_OVER_AB,E_BIN)

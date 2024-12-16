@@ -6,7 +6,7 @@
 \usepackage{natbib}
 
 \newcommand\ghurl[0]{\url{https://github.com/tedjohnson12/bin-disk-paper}}
-\newcommand\codeurl[0]{\url{https://github.com/tedjohnson12/misaligned_cb_disk}}
+\newcommand\codeurl[0]{https://github.com/tedjohnson12/polar-disk-freq}
 \newcommand\getref[0]{(\textcolor{red}{ref?})}
 \newcommand\question[1]{[\textcolor{red}{#1}]}
 
@@ -36,77 +36,38 @@
 % Abstract with filler text
 \begin{abstract}
 
-    Circumbinary gas disks that are misaligned to the binary orbital plane evolve toward either a coplanar or a polar-aligned configuration with respect to the binary host. The preferred alignment depends on the dynamics of the disk: whether it undergoes libration or nodal precession, with librating disks evolving to polar inclinations on the disk's viscous timescale. We aim to quantify the fraction of polar disks expected to be found in a population of binary star systems, modeling the disk as a geometrically thin ring. We start with an analytic solution in the quadrupole (orbital-period averaged) approximation of the binary potential. We next use numerical methods to integrate a system of linear differential equations using the same approximation. Finally, we use the $n$-body code {\sc REBOUND} to model the full binary potential. We compare the results of these three methods and investigate how the distributions of mutual inclination, relative angular momentum, and binary eccentricity in a population affect the expected fraction of polar disks.
+    Circumbinary gas disks that are misaligned to the binary orbital plane evolve toward either a coplanar or a polar-aligned configuration with respect to the binary host. The preferred alignment depends on the dynamics of the disk: whether it undergoes libration or nodal precession, with librating disks evolving to polar inclinations on the disk's viscous timescale. We quantify the fraction of binary star systems whose disks are expected to have polar orbits $f_\text{polar}$, finding that this quantity is heavily dependent on the host population's formation history. Modeling the disk as a geometrically thin ring, we use analytic and numerical methods to map sets of orbital parameters to dynamical states of the binary-disk system, calculating $f_\text{polar}$ by integrating over a large parameter space. Our findings can be used to make predictions given populations with well-understood distributions of binary eccentricity and initial mutual inclination. We also explore the consequences of the finite lifetime and non-zero radial extent of a real disk, which are incomplete evolution and a limit on the relative angular momentum imposed by disk breaking and gravitational instability, respectively.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
 
+Observed circumbinary planets --- those orbiting two stars --- have mostly been found to orbit in the same plane as their hosts \citep{doyle2011,orosz2012,welsh2012}. While this preference is the result of target selection effects (\citealt{martin2014}, see also \citealt{martin2015}, \citealt{martin2017a}), it is also representative of the fact that, for the disk progenitors of these planets \citep[from which the planets inherit orbital parameters, see][]{childs2021}, a coplanar alignment is one of two possible stable orientations \citep{bate2000,lubow2000}. The other configuration --- a polar disk --- is characterized by being inclined $\sim 90^\circ$ relative to the binary orbital plane \citep{aly2015,martin2017}. Evidence for one polar planet has been found via indirect means \citep[AC Her, ][]{hillen2015,anugu2023,martin2023}, and only a handful of confirmed polar disks have ever been discovered. These include a polar debris disk in the 99 Her system (\citealt{kennedy2012}, which likely evolved from a polar gas disk, see \citealt{smallwood2020}) and polar gas disks in the HD 98800 \citep{kennedy2019} and V773 Tau \citep{kenworthy2022} systems.
 
-Observed circumbinary planets -- those orbiting around two stars -- have been mostly found to orbit in the same plane as
-their hosts \citep{doyle2011,orosz2012,welsh2012}. However, this is likely a result of selection effects \RGM{(citations by David Martin..)}.  Misaligned disks around eccentric binaries evolve \RGM{either to coplanar (citations)} to a polar state  \citep{aly2015,martin2017}. A polar-aligned debris disk has been found in the 99 Her system
-\citep{kennedy2012} and polar-aligned gas disks have been found in the HD 98800 \citep{kennedy2019} and V773 Tau systems \citep{kenworthy2022}.
-AC Her, a post-AGB system with a polar-inclined
-disk, may host the first circumbinary planet found in a polar orbit \citep{hillen2015,anugu2023,martin2023}.
+Through surveys of recent literature in circumbinary disk characterization \citep{czekala2019,zurlo2023}, \citet{ceppi2024} estimate that the fraction of circumbinary disks which are polar ($f_\text{polar}$) is $0.17 \pm 0.08$, though they acknowledge that the sample size is small ($\sim 15$ disks) and that the mutual inclination is hard to measure. They place this result in the context of a theoretical framework for a massless disk developed by \citet{farago2010,zanazzi2018} and conclude that observations are not telling the whole story. In this work, we use the results of \citet{martin2019} to extend this theoretical framework to massive disks.
 
+Given enough time, a gas disk that is misaligned from one of the two stationary inclinations will bring itself to alignment through torques excited by warps that form as the disk undergoes differential precession \citep{bate2000,lubow2000}. Disks which are misaligned from coplanar only slightly (including the anti-aligned case where the mutual inclination $i\sim\pi$) undergo prograde or retrograde nodal precession \citep{papaloizou1995}. \citet{bate2000,lubow2000} show that this kind of motion will lead to coplanar alignment on the viscous timescale of the disk.
 
-The alignment of circumbinary planets, and the alignment of the disks from which they form, are determined by their interaction history with their
-host stars. \RGM{For a massless} circumbinary disk, the type of nodal precession can be split into two categories:
+When the mutual inclination is $\sim\pi/2$ (near polar), the disk can librate about the eccentricity vector of the binary \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. In sufficiently massive disks, a third kind of motion arises at high inclinations. Prograde precession takes over from retrograde precession near the anti-aligned point, and {\it crescent} orbits take over at inclinations between libration and high-inclination precession (\citealt{chen2019}, see also \citealt{zanazzi2018}), named because of the shape they form on a phase diagram. \citet{abod2022} showed that both librating and crescent orbiting disks decay to the stationary polar inclination \citep{martin2019} on the viscous timescale.
 
-\begin{enumerate}
-    \item {\bf Precession about the angular momentum vector of the binary.} In the case where the planet/disk
-        is slightly misalignend, its own angular momentum vector precesses about that of the binary \citep[e.g.,][]{bate2000,lubow2000}.
-        This is characterized by near constant
-        inclination and oscillation of the longitude of the ascending node. Included in this case is the subclassification
-        of retrograde orbits (those whose angular momentum vectors are misaligned by $\sim 180 \deg$) and the two
-        trivial cases of perfectly aligned/misaligned orbits which do not precess. \label{enum:precession}
-    \item {\bf Libration about the eccentricity vector of the binary.} In the case where misalignment is high (i.e. near
-    perpendicular) the angular momentum vector of the planet/disk precesses about the eccentricity vector of the binary 
-    \citep[e.g.,][]{verrier2009,farago2010,doolin2011}. This is called a librating orbit. In this case the mutual inclination of the disk oscillates about the polar configuration.
-    \label{enum:libration}
-\end{enumerate}
+Thus, when the disk lifetime is longer than the viscous timescale \citep[which itself is similar to the precession timescale][]{bate2000}, it is appropriate to map the secular dynamics (which we call the dynamical state, e.g. nodal precession, libration or crescent orbits) to an end state of the disk (coplanar or polar, respectively). More challenging is mapping the parameters of the disk (e.g., binary eccentricity, initial inclination, disk mass, etc.) to a dynamical state. In general, this can be done using expensive 3D disk simulations (e.g., those shown in \citealt{martin2019}, \citealt{smallwood2019}, \& \citealt{abod2022}. It is not feasible to perform such simulations over a large parameter space, so we instead approximate a disk as a geometrically thin ring with angular momentum equivalent to that of the extended disk it represents. The literature provides a robust theoretical framework for the dynamics of such a ring, with analytical solutions \citep{farago2010,zanazzi2018,martin2019} as well as numerical $n$-body simulations \citep{abod2022,lepp2022} used to translate initial conditions into the ring's dynamical state.
 
-\RGM{However, for a massive disk, there are additional types of nodal precession.... (describe) \citep{abod2022}.}
-
-Planets form with the orbital characteristics given by their progenitor disks \citep[e.g.,][]{childs2021}, so it is sufficient in this work to
-discuss disk dynamics only.
-Differential precession between adjacent annular regions in a disk cause dissipation, ultimately dampening precession or libration
-so that the disk reaches a steady state on its viscous timescale \citep[see also \citet{nixon2011,foucart2013,foucart2014}]{bate2000}.
-Therefore, it is appropriate to map a disk's
-initial interactions with a binary (prograde precession, libration, retrograde precession) to the disk's final configuration
-(prograde coplanar, circumpolar, retrograde coplanar, respectively).
-
-In the case of a massless disk, the type of interaction can be determined analytically from just the binary eccentricity and the
-direction of the disk's specific angular momentum vector
-\citep[parameterized by the disk inclination and its longitude of the ascending node][]{zanazzi2018}.
-Given priors on these quantities we can predict the observed frequencies of circumbinary disks (and planets) in the polar configuration.
-\citet{ceppi2024} do just this -- finding the fractions of binaries with polar disks and the mean eccentricities of those binaries
-as a function of two free parameters.
-
-In this work we will study the more general case of a massive disk. The resulting polar frequency function only contains one
-additional parameter, but the orbital parameters of the binary can now change due to interactions with the disk. The additional
-complications of this case require the application of numerical simulations; we use the N-body code {\sc rebound} \citep{rebound} to simulate the
-dynamics of a three-body system, with a massive point particle used as a stand-in for the disk. \citet{abod2022} found that this 3-body
-setup is a valid description of a disk with angular momentum equal to that of the third body in the limit that the disk mass does not change
-(i.e. no accretion). This setup also cannot account for warping effects and disk breakage as we must treat the disk as a solid body. 
-We describe this setup in detail in Section \ref{sec:methods}
-
-\question{describe the regime we are working in}
-
+In this study we use three methods, varying from purely analytic to $n$-body and statistical, to calculate $f_\text{polar}$ for a given population. In Section \ref{sec:analytic} we use the results of \citet{martin2019} to extend the analytic work of \citet{zanazzi2018} to massive rings. Section \ref{sec:rk} 
+describes the numerical integration of a set of coupled differential equations from \citet{martin2019} that describe the evolution of the binary-ring system in the secular approximation of the binary potential. In Section \ref{sec:reb} we treat the binary potential fully using the $n$-body code {\sc REBOUND} \citep{rebound}, finding only a negligible difference between this method and the much-faster secular approximation. We discuss our results in Section \ref{sec:results}, specifically looking at the effect that the binary eccentricity, relative angular momentum, and initial mutual inclination distributions have on the value of $f_\text{polar}$. Section \ref{sec:discussion} examines the consequences of our thin-ring approximation, and discusses what considerations must be made to apply our results to an extended disk. Finally, Section \ref{sec:conclusions} describes our overall conclusions. Code implementing the methods described in this paper is publicly available\footnote{\url{\codeurl}, or via \hfill \break \texttt{ pip install git+\codeurl} } as an installable Python package, and the scripts used to generate the figures along with the \LaTeX \space source are available\footnote{\ghurl} as well.
 
 \section{Analytic Treatment}
 \label{sec:analytic}
 For a massive ring that is misaligned to the binary orbit there are two conditions that determine if the ring is librating \citep[see Equations 31, 32, 38 in][]{martin2019}. Each condition is valid for a different regime of the constant of motion $\chi$ that is defined with
 \begin{equation}
-    \chi = e_{\rm b}^2 - 2\,(1 - e_{\rm b}^2)\,j\,(2j + \cos{i})
+    \chi = e_{\rm b}^2 - 2\,(1 - e_{\rm b}^2)\,j\,(2j + \cos{i})\, ,
 \end{equation}
 for binary eccentricity $e_{\rm b}$, normalized ring angular momentum $j = J_{\rm r}/J_{\rm b}$, and mutual inclination $i$. The condition for libration is
 \begin{equation}
     \label{eq:lib_condition}
         \begin{array}{lr}
-            -(1-e_\text{b}^2)(2j+\cos{i})^2 + 5e_\text{b}^2 \sin^2{i}\sin^2{\Omega} > 0 & \chi > 0 \\
-            e_\text{b}^2 + 4j(1-e_\text{b}^2)(-\cos{i} + j(-2+5\sin^2{i}\sin^2{\Omega})) > 0 & \chi < 0 .
+            -(1-e_\text{b}^2)(2j+\cos{i})^2 + 5e_\text{b}^2 \sin^2{i}\sin^2{\Omega} > 0\, , & \chi > 0 \\
+            e_\text{b}^2 + 4j(1-e_\text{b}^2)(-\cos{i} + j(-2+5\sin^2{i}\sin^2{\Omega})) > 0\, , & \chi < 0 .
         \end{array}
 \end{equation}
 These conditions can be rearranged to find the minimum value of $\Omega$ that will allow for a librating orbit.
@@ -124,12 +85,12 @@ These conditions can be rearranged to find the minimum value of $\Omega$ that wi
 Since the range of $\sin^2{\Omega_{\rm min}}$ is $[0,1]$, there exists a critical value for the inclination, $i_{\rm crit}$, below which all orbits circulate. For the $\chi \ge 0$ case, we require
 \begin{equation}
     \label{eq:icrit1}
-    \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0
+    \frac{5 e_{\rm b}^2}{1-e_{\rm b}^2} \sin^2{i_{\rm crit}} - (\cos{i_{\rm crit}} + 2j)^2 = 0\, ,
 \end{equation}
 and for the $\chi < 0$ case, $i_{\rm crit}$ satisfies
 \begin{equation}
     \label{eq:icrit2}
-    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0.
+    \sin^2{i_{\rm crit}} - \frac{\cos{i_{\rm crit}}}{5j} + \frac{e_{\rm b}^2}{20 j^2 (1-e_{\rm b}^2)} + \frac{2}{5} = 0\, .
 \end{equation}
 If the left hand side of equation~(\ref{eq:icrit1}) or~(\ref{eq:icrit2}) (depending on the value of $\chi$) evaluates to $<0$, then only circulating orbits are possible. Note that when $j=0$, $\chi \ge 0$ and equation (\ref{eq:omega_min}) recovers equation (75) from \citet{zanazzi2018}.
 
@@ -148,7 +109,7 @@ Given a uniformly distributed $\Omega$, the probability of a polar orbit  is giv
 The fraction of polar orbits is then calculated with
 \begin{equation}
     \label{eq:fp_int}
-    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\,p_j(j)\,p_{e_\text{b}}(e_\text{b})\,p_i(i)\, dj\,de_{\rm b}\,di,
+    f_{\rm polar} = \iiint P(j,e_{\rm b}, i)\,p_j(j)\,p_{e_\text{b}}(e_\text{b})\,p_i(i)\, dj\,de_{\rm b}\,di\,,
 \end{equation}
 where $p_j(j)$, $p_{e_\text{b}}(e_\text{b})$, and $p_i(i)$ are the probability distributions of $j$, $e_\text{b}$, and $i$, respectively.
 
@@ -159,18 +120,19 @@ This integral is straightforward to compute numerically, and allows for any desi
 
 When $j$ is very large, the $\chi < 0$ branch of Equation \ref{eq:omega_min} becomes
 \begin{equation}
-    \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}
+    \sin^2{\Omega_{\rm min}} = \frac{2}{5}\csc^2{i}\, ,
 \end{equation}
 and the value of $i_{\rm crit}$ is 
 \begin{equation}
-    i_{\rm crit} = \arccsc{\sqrt{5/2}} = 39.2^\circ.
+    i_{\rm crit} = \arccsc{\sqrt{5/2}} = 39.2^\circ\,.
 \end{equation}
 This is the inclination of the last circular orbit for Kozai-Lidov oscillations in the limit that the perturbed object is very far from the perturber \citep{vonzeipel1910,kozai1962,lidov1962}. Note that it has no dependence on the disk angular momentum or on the binary eccentricity. 
 
 For an isotropic angular momentum distribution,  the polar fraction in this limit is
-\begin{equation}
-    f_{{\rm polar}, j \gg 1} = \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di = \variable{output/high_j_integral.txt}
-\end{equation}
+\begin{align}
+    f_{{\rm polar}, j \gg 1} &= \int_0^\pi\,\left (1-\frac{2}{\pi}\arcsin{\left (\sqrt{\frac{2}{5}} \csc{i} \right )}\right ) \sin{i}\,di\, , \\
+    & = \variable{output/high_j_integral.txt} \, . \nonumber
+\end{align}
 This is the value that the higher $j$ curves in Figure \ref{fig:ebin} tend to for low $e_{\rm b}$, computed numerically.
 
 To interpret the Kozai-Lidov oscillations in this limit we can picture a system from the point of view of a far-away stationary observer. When $j \approx 0$, the orbital parameters of the interior binary are not affected by the disk, and the disk undergoes precession or libration due to the effects of the binary. When $j$ is high, however, it is the disk that appears static. An observer would see oscillations in the orbital parameters of the central binary, and its angular momentum and eccentricity vectors would change in response to the disk. This can be thought of in terms of the classical Kozai-Lidov problem, where instead of a planet and its satellite, the interior objects are the binary, and the exterior perturbing object is the circumbinary disk.
@@ -187,7 +149,7 @@ We determine the dynamical state of the system by tracking the orbital quantitie
 \end{equation}
 and
 \begin{equation}
-    \Omega = \arctantwo (\ell_x, -\ell_y).
+    \Omega = \arctantwo (\ell_x, -\ell_y)\, .
     \label{eq:omega}
 \end{equation}
 If a disk undergoes prograde nodal precession, then these quantities form clockwise loops about the origin as the system evolves. Under retrograde precession, these loops are counter-clockwise. However, any state that would lead to a polar orbit (i.e. libration and crescent patterns) will form closed loops that do not encompass the origin, and these tracks will never cross the line $i\,\sin{\Omega}=0$. The state can be determined by tracking the quadrant of the point $(i\,\cos{\Omega},~i\,\sin{\Omega})$: prograde orbits will traverse all quadrants in the order [I, IV, III, II], and retrograde orbits will travel in the opposite order. A polar orbit that stars in quadrant I or II, however, is restricted to those two quadrants and will alternate between them. The same goes for polar orbits in quadrants III and IV. Therefore, the dynamical state can often be determined by the list of previous quadrant crossings. For example, I$\rightarrow$IV can only be caused by prograde precession, III$\rightarrow$IV is ambiguous, and III$\rightarrow$IV$\rightarrow$III indicates a polar orbit.
@@ -266,7 +228,7 @@ To determine the polar fraction of a given population of geometrically thin ring
 
 We choose to consider specific values of $j$ rather than a parameterized distribution (equivalent to setting $p_j(j) = \delta(j-j_0)$). This choice is motivated by the lack of published observational or theoretical constraints on the disk-to-binary angular momentum ratio. Even if the distribution were known, it would likely not be useful because of the possibility for extended disks to warp and break, leading to independent ring evolution (see Section \ref{sec:discussion}).
 
-Figure \ref{fig:ebin} shows $f_\text{polar}(e_\text{b})$ for various values of $j$. We see here two limiting behaviors: when $j$ is small, then $f_\text{polar}\sim e_\text{b}$. However, when $j$ is large (and $e_\text{b}$ is not nearly $1$), then the Kozai-Lidov behavior discussed in Section \ref{subsec:high_j} dominates and $f_\text{polar}\approx \text{const}$. Note that while these calculations assumed $p_i(i)$ is isotropic, we show in Section \ref{subsec:effect-i} that the qualitative behaviors are independent of any preference (or lack of preference) for coplanar initial conditions.
+Figure \ref{fig:ebin} shows $f_\text{polar}(e_\text{b})$ for various values of $j$. We see here two limiting behaviors: when $j$ is small, then $f_\text{polar}\sim e_\text{b}$. However, when $j$ is large (and $e_\text{b}$ is not nearly $1$), then the Kozai-Lidov behavior discussed in Section \ref{subsec:high_j} dominates and $f_\text{polar}\approx \text{const}$. Note that while these calculations assumed $p_i(i)$ is isotropic, we show in Section \ref{subsec:change_i} that the qualitative behaviors are independent of any preference (or lack of preference) for coplanar initial conditions.
 
 \subsection{Effects of $e_\text{b}$}
 \label{subsec:effect-eb}

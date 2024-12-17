@@ -349,7 +349,7 @@ Given some set of assumptions, we can calculate the fraction of binary systems f
 
 \begin{figure}
     \includegraphics[width=0.5\textwidth]{figures/grid_example_tp.pdf}
-    \caption{Same as Figure \ref{fig:grid_example}, but with a mask over the region where $t_\text{p} > t_\text{disk}$. Parameters used are an equal-mass binary with $M_\text{b} = M_\odot$, $e_\text{b} = 0.1$, $a_\text{b} = 1\text{ AU}$, $r/a_\text{b} = 30$, and $t_\text{disk} = 10^6 \text{ years}$. Note that \variable{output/grid_example_tp.txt}\% of initial conditions remain misaligned in this setup, but this fraction is near zero when $r/a_\text{b} = 20$ and near 1 when $r/a_\text{b} = 40$.}
+    \caption{Same as Figure \ref{fig:grid_example}, but with a mask over the region where $t_\text{p} > t_\text{disk}$. Parameters used are an equal-mass binary with $M_\text{b} = M_\odot$, $e_\text{b} = 0.4$, $j=0.1$, $a_\text{b} = 1\text{ AU}$, $r/a_\text{b} = 30$, and $t_\text{disk} = 10^6 \text{ years}$. Note that \variable{output/grid_example_tp.txt}\% of initial conditions remain misaligned in this setup, but this fraction is near zero when $r/a_\text{b} = 20$ and near 1 when $r/a_\text{b} = 40$. Not shown are versions of this figure where $e_\text{b}$ and $j$ have been varied. We have found that up to 85\% of simulations remain misaligned when $e_\text{b}=10^{-6}$, but if $j$ is subsequently increased to 10 then that becomes 1\%. }
     \script{grid_example_tp.py}
     \label{fig:grid-tp}
 \end{figure}

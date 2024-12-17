@@ -10,6 +10,6 @@ if __name__ == "__main__":
     f=0.5
     p=2
     eb=0.4
-    alpha=5
+    alpha=2.5
     beta=10
     print(jmax(h,f,p,eb,alpha,beta))

@@ -63,12 +63,6 @@ def run_grid(
     _frac = simpson(y=integrand1d,x=i_mean)/(4*np.pi)
     return i_arr, omega_arr, _frac, state_arr, tau_p_arr
 
-def tau_to_tOmegab(tau:np,r_over_a: float, f: float) -> np.ndarray:
-    """
-    Convert a tau value to t * Omega_b
-    """
-    return 4/3 * tau * r_over_a**(7/2) * 1/(f*(1-f)*np.sqrt(1+f))
-
 
 if __name__ == '__main__':
     N_INC = 1000
@@ -79,9 +73,7 @@ if __name__ == '__main__':
     AP_OVER_AB = 15
     FB = 0.5
     i_arr, omega_arr,frac, state_arr, tau_p_arr = run_grid(N_INC,N_OMEGA,E_BIN,J)
-    
-    t_p_omega_b = tau_to_tOmegab(tau_p_arr,AP_OVER_AB,FB)
-    
+        
     fig = plt.figure(figsize=(4,4))
     extent = [0.2,0.15,0.7,0.6]
     ax_cartesian: plt.Axes = fig.add_axes(extent)
@@ -90,7 +82,6 @@ if __name__ == '__main__':
     ax_polar.patch.set_agg_filter(0.0)
     fig.subplots_adjust(left=0.15,right=0.6)
     im = ax_polar.pcolormesh(omega_arr,i_arr,state_arr,rasterized=True,cmap=CMAP,linewidth=0.0,vmin=1,vmax=3)
-    # ax_polar.pcolormesh(omega_arr,i_arr,np.where(t_p_omega_b>T_DISK,1,np.nan),alpha=1.0,cmap='gray',rasterized=True,linewidth=0.0)
     
     ax_polar.set_aspect('equal')
     ax_cartesian.set_xlabel('$i~\\cos{\\Omega}$',fontsize=12)

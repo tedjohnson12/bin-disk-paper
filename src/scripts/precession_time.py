@@ -60,11 +60,13 @@ if __name__ == '__main__':
     is_retrograde = states == STATE_MAPPER['r']
     if True:
         first_prograde = np.argwhere(is_prograde)[0][0]
+        last_prograde = np.argwhere(is_prograde)[-1][0] # this is so things look better
         before_prograde = np.arange(0,len(js)) < first_prograde
         after_prograde = np.arange(0,len(js)) >= first_prograde
+        is_last_prograde = np.arange(0,len(js)) == last_prograde
         ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='-',lw=2,label='Prograde')
         ax.plot(js[is_librating & before_prograde],rats[is_librating & before_prograde],color=colors.state_colors['l'],ls='-',lw=2,label='Librating')
-        ax.plot(js[is_librating & after_prograde],rats[is_librating & after_prograde],color=colors.state_colors['l'],ls='-',lw=2)
+        ax.plot(js[(is_librating & after_prograde) | is_last_prograde],rats[(is_librating & after_prograde) | is_last_prograde],color=colors.state_colors['l'],ls='-',lw=2)
     else:
         ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='-',lw=2,label='Prograde')
         ax.plot(js[is_librating ],rats[is_librating ],color=colors.state_colors['l'],ls='-',lw=2,label='Librating')
@@ -134,7 +136,7 @@ if __name__ == '__main__':
         ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='--',lw=2,label='$5^\\circ$ from coplanar')
 
     # ax.plot(js[is_retrograde],rats[is_retrograde],color=colors.state_colors['r'],ls='-',lw=2)
-    # ax.legend(prop={'size':12,'family':'serif'})
+    ax.legend(prop={'size':12,'family':'serif'})
     ax.set_xlabel('$j$')
     ax.set_ylabel('$t_{\\rm p}/t_{{\\rm p}, j=0}$')
     # ax.set_xscale('log')

@@ -20,7 +20,7 @@ OUTFILE = paths.figures / 'grid_example_tp.pdf'
 TAU_INIT = 0.0
 DTAU_INIT = 0.01
 WALLTIME = 1 # seconds per run (usually 1/50,000 s)
-EPSILON = 1e-12 # Error allowance for integration
+EPSILON = 1e-14 # Error allowance for integration
 
 E_BIN = 0.4
 J = 0.1
@@ -76,8 +76,8 @@ def run_grid(
 
 
 if __name__ == '__main__':
-    N_INC = 100
-    N_OMEGA = 101
+    N_INC = 1000
+    N_OMEGA = 1001
     
     i_arr, omega_arr,frac, state_arr, tau_p_arr = run_grid(N_INC,N_OMEGA,E_BIN,J)
     

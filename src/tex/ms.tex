@@ -318,7 +318,7 @@ $k^2$ and $h$ are constants that \citet{farago2010} define in their equations (2
 
 Note that $\Gamma_1$ depends on $e_\text{b}$, and so it is only a constant in the case of a test particle. For $j>0$, we must compute the precession timescale ourselves. The time coordinate used in Section \ref{sec:rk} is $\tau \equiv \alpha' t$. $\alpha'$ is defined by \citet[see eq. 3.9]{farago2010}, and we write it as
 \begin{equation}
-    \alpha' \equiv \frac{3}{4} \Omega_\text{b} \left(\frac{a_\text{b}}{r}\right)^{7/2} f(1-f) \,\Gamma_2(j,f,a_\text{b}/a_\text{r}, e_\text{b}) \, ,
+    \alpha' \equiv \frac{3}{4} \Omega_\text{b} \left(\frac{a_\text{b}}{r}\right)^{7/2} f(1-f) \,\Gamma_2(j,f,a_\text{b}/r, e_\text{b}) \, ,
 \end{equation}
 where we have written the $\sqrt{1+m_\text{r}/M_\text{b}}$ factor as $\Gamma_2$. Written in terms of our variables, this expression is very complicated, and we choose to compute it numerically for simplicity. Note, however, that except for extremely large $j$ (e.g. $>10$), $\Gamma_2 \sim 1$.
 
@@ -343,7 +343,7 @@ Compared to the precession timescale for a test particle, that is
     \label{fig:t_p}
 \end{figure}
 
-Figure \ref{fig:t_p} shows that $j$ has two different effects on $t_\text{p}$. The most obvious is that when $j$ changes, the location of the boundary between dynamical regimes also changes. This can cause huge spikes in the timescale ratio as that boundary moves close to the initial conditions $(i_0, \Omega_0)$. The other effect is that the timescale ratio becomes small as $j$ increases.\TJ{I am fairly sure this can be explained by showing that the Kozai-Lidov timescale is proportional to $1/j$, but I have not found a good enough reference yet.}
+Figure \ref{fig:t_p} shows that $j$ has two different effects on $t_\text{p}$. The most obvious is that when $j$ changes, the location of the boundary between dynamical regimes also changes. This can cause huge spikes in the timescale ratio as that boundary moves close to the initial conditions $(i_0, \Omega_0)$. The other effect is that the timescale ratio becomes small as $j$ increases. We find that the slope for large j is rather consistent, with $t_\text{p}\propto j^{-1} \text{ to } j^{-1.2}$, with the exponent varying slightly with changes to $f$ or $a_\text{b}/r$. 
 
 Given some set of assumptions, we can calculate the fraction of binary systems for which the precession timescale is too long to reach a coplanar or polar orbit. Planets formed in these disks will undergo secular oscillations for the entire lifetime of their system. This fraction is a strong function of the radius of the ring, and differential precession of an extended disk will cause warps and breaks (see Section \ref{subsec:breaks})
 

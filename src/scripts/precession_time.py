@@ -35,6 +35,7 @@ if __name__ == '__main__':
     ab_ap = 1/5
     jcrit = j_critical(eb)
     js = np.linspace(0,2,2000)
+    # js=np.logspace(-2,1.5,2000)
     fig = plt.figure(figsize=(4,8))
     gs = fig.add_gridspec(2,1)
     ax = fig.add_subplot(gs[0])
@@ -69,6 +70,7 @@ if __name__ == '__main__':
         ax.plot(js[is_librating ],rats[is_librating ],color=colors.state_colors['l'],ls='-',lw=2,label='Librating')
         ax.plot(js[is_retrograde],rats[is_retrograde],color=colors.state_colors['r'],ls='-',lw=2)
     ax2.annotate('$(i_0,\\Omega_0)$',xy=(0,i0),arrowprops=dict(arrowstyle='->',color='k',lw=2),clip_on=False,xycoords='data',xytext=(0.2,i0-0.4),fontsize=12)
+    ax2.scatter(0,i0,c='r',s=5,marker='X',zorder=100)
     
     
     # stationary
@@ -132,9 +134,12 @@ if __name__ == '__main__':
         ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='--',lw=2,label='$5^\\circ$ from coplanar')
 
     # ax.plot(js[is_retrograde],rats[is_retrograde],color=colors.state_colors['r'],ls='-',lw=2)
-    ax.legend(prop={'size':12,'family':'serif'})
+    # ax.legend(prop={'size':12,'family':'serif'})
     ax.set_xlabel('$j$')
     ax.set_ylabel('$t_{\\rm p}/t_{{\\rm p}, j=0}$')
+    # ax.set_xscale('log')
+    # ax.set_yscale('log')
+    # ax.set_aspect('equal')
     ax2.set_xlabel('$i~\\cos{\\Omega}$')
     ax2.set_ylabel('$i~\\sin{\\Omega}$')
     ax2.set_aspect('equal')

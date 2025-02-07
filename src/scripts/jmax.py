@@ -8,8 +8,8 @@ from polar_disk_freq.jmax import jmax
 if __name__ == "__main__":
     h=0.01
     f=0.5
-    p=2
+    p=1
+    beta=10
     eb=0.4
     alpha=2.5
-    beta=10
     print(jmax(h,f,p,eb,alpha,beta))

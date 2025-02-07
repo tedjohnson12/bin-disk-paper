@@ -390,18 +390,18 @@ Looking at equation (\ref{eq:Jr}) and equation (3) of \citet{abod2022}, we can w
     j = \frac{2\pi \Sigma_\text{in} r_\text{in}^{5/2}}{(5/2-p)f(1-f)M_\text{b}\sqrt{a_\text{b}(1-e_\text{b}^2)}}  \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right) \, .
 \end{equation}
 
-The value of $p$ is typically taken to be less than 2, so the instability onset occurs at the inner edge of the disk. We use equation (\ref{eq:toomre2}) to find a maximum value for $\Sigma_\text{in}$:
+The value of $p$ is typically taken to be less than 2, so the instability onset occurs at the outer edge of the disk. We use equation (\ref{eq:toomre2}) to find a maximum value for $\Sigma_\text{in}$:
 \begin{equation}
-    \Sigma_\text{max} = \frac{hM_\text{b}}{\pi r_\text{in}^2}\, .
+    \Sigma_\text{max} = \frac{hM_\text{b}}{\pi r_\text{in}^2 (r_\text{out}/r_\text{in})^{2-p}}\, .
 \end{equation}
 
 The maximum value of $j$ to be stable against self-gravity is
-\begin{equation}
+\begin{multline}
     \label{eq:jmax-shallow}
-    j_\text{max} = \frac{2h}{f (1-f) (5/2 - p)\sqrt{1-e_\text{b}^2}} \sqrt{\frac{r_\text{in}}{a_\text{b}}} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right)\, .
-\end{equation}
+    j_\text{max} = \frac{2h}{f (1-f) (5/2 - p)\sqrt{1-e_\text{b}^2}}\\ \sqrt{\frac{r_\text{in}}{a_\text{b}}} \left(\frac{r\text{out}}{r_\text{in}}\right)^{p-2} \left( \left( \frac{r_\text{out}}{r_\text{in}} \right)^{5/2 - p}- 1\right)\, .
+\end{multline}
 
-If we consider a $p=1$ disk orbiting an equal mass binary with $e_\text{b}=0.4$, $h=0.01$, and $r_\text{in}/a_\text{b}=2.5$, then for a relatively narrow ring ($r_\text{out}/r_\text{in} = 2$), we calculate $j_\text{max} = 0.17$. If the disk is allowed to be more extended (in this case $r_\text{out}/r_\text{in} = 10$), then we find $j_\text{max} = 2.8$.
+If we consider a $p=1$ disk orbiting an equal mass binary with $e_\text{b}=0.4$, $h=0.01$, and $r_\text{in}/a_\text{b}=2.5$, then for a relatively narrow ring ($r_\text{out}/r_\text{in} = 2$), we calculate $j_\text{max} = 0.08$. If the disk is allowed to be more extended (in this case $r_\text{out}/r_\text{in} = 10$), then we find $j_\text{max} = 0.28$.
 
 The self-gravitation of a disk places an upper limit on what values of $j$ are physical in a given system. As a consequence, a high-$j$ disk is either gravitationally unstable or highly radially extended, although we note that gravitational instability in a warped disc may be suppressed by the heating from the warp propagation \citep{rowther2022}.  A radially extended disk is more likely to break, effectively lowering the value of $j$. This process is highly dependent on the parameters of a particular system, but there may be a general preference for small $j$ by means of gravitational instability and disk breaking. 
 

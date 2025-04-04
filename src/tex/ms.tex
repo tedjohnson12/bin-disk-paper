@@ -326,7 +326,7 @@ Note that $\Gamma_1$ depends on $e_\text{b}$, and so it is only a constant in th
 \begin{equation}
     \alpha' \equiv \frac{3}{4} \Omega_\text{b} \left(\frac{a_\text{b}}{r}\right)^{7/2} f(1-f) \,\Gamma_2(j,f,a_\text{b}/r, e_\text{b}) \, ,
 \end{equation}
-where we have written the $\sqrt{1+m_\text{r}/M_\text{b}}$ factor as $\Gamma_2$. Written in terms of our variables, this expression is very complicated, and we choose to compute it numerically for simplicity. Note, however, that except for extremely large $j$ (e.g. $>10$), $\Gamma_2 \sim 1$.
+where we have written the $\sqrt{1+m_\text{r}/M_\text{b}}$ factor as $\Gamma_2$. \RR{$m_\text{r}$ is the mass of the ring. To compute $\Gamma_2$ from our variables requires finding the roots of a cubic equation (see equation (\ref{eq:gamma2-eq})). However, for low $j$ (e.g. $<10$), $m_\text{r} \ll M_\text{b}$ and $\Gamma_2 \sim 1$.}
 
 Given \RR{$\tau_\text{p}$, the precession timescale in code units, we can calculate the precession timescale in physical units}
 \begin{equation}
@@ -440,6 +440,25 @@ Simulations in this paper made use of the {\sc rebound} N-body code \citep{rebou
 The simulations were integrated using IAS15, a 15th order Gauss-Radau integrator \citep{reboundias15}. 
 
 \end{acknowledgements}
+
+\appendix
+
+\section{Computing $\Gamma_2$}
+\RR{
+Equation (3.9) from \citet{farago2010} includes a term $\sqrt{1 + m_\text{r}/M_\text{b}}$ where $m_\text{r}$ is the mass of the ring and $M_\text{b}$ is the mass of the binary host. To find the value of this expression in our own variables is non-trivial. Here we define
+\begin{equation}
+    \Gamma_2 = \sqrt{1 + \frac{m_\text{r}}{M_\text{b}}}\, .
+\end{equation}
+}
+
+\RR{
+We can write
+\begin{equation}
+    \label{eq:gamma2-eq}
+    \Gamma_2^3 - \Gamma_2 - j\,f\,(1-f)\,\sqrt{\frac{a_\text{b}}{r}\,(1-e_\text{b}^2)} = 0\, ,
+\end{equation}
+and solve for $\Gamma_2$ using the Newton-Raphson method.
+}
 
 \bibliography{cbdisk,syw,reb}
 

@@ -1,0 +1,37 @@
+\documentclass{letter}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\fboxrule=3pt
+\fboxsep=4pt
+
+
+\newenvironment{response}[1]{
+    \fcolorbox{blue}{white}{
+    \begin{minipage}{0.4\textwidth}
+        #1
+    \end{minipage}
+    }
+    \begin{minipage}{0.4\textwidth}
+    }
+    {\end{minipage}}
+
+
+\begin{document}
+
+\begin{letter}{}
+    \opening{Dear Editor Carraro, Data Editors, and Anonymous Reviewer,}
+
+    Please find our revised manuscript alongside the below response to the reviewers report. The authors would like to thank the editor, reviewer, and data editors for their thoughtful review. Please see below for responses to the report along with the accompanying updated manuscript, where changes are marked in \textcolor{blue}{\bf blue}.
+
+    \begin{response}{Reviewer's Comment}
+        Authors' Response
+    \end{response}
+
+
+
+
+\end{letter}
+
+\end{document}

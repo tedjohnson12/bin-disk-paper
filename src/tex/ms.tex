@@ -203,7 +203,7 @@ Given that these simulations take much longer than the RKF algorithm, we cannot 
             MC results (points) for $e_{\rm b}=0.4$, $j=0.66$, and $f_{\rm b}=0.5$ compared to RKF results for the same setup (contour lines). This value of $j$ is chosen here as it is the critical value \citep[see][]{martin2019,abod2022}, beyond which retrograde dynamical states are not allowed. The regions interior to the black contour lines are initial conditions which allow polar orbits according to the RKF method.
             Note that some points that {\sc rebound} classifies as polar fall outside the RKF polar region.
             The MC result gives $f_{\text{polar}} = \variable{output/mc_out.txt}$ while the RKF result gives $f_{\text{polar}} = \variable{output/rk_out.txt}$ with
-            numerical error on the order of $\variable{output/rk_err.txt}$.
+            numerical error on the order of $\variable{output/rk_err.txt}$. \RR{The MC simulation results used to generate this figure can be downloaded at \dataset[doi: 10.5281/zenodo.14736363]{\doi{10.5281/zenodo.14736363}}}
         }
         \script{compare_massive.py}
         \label{fig:rkf}

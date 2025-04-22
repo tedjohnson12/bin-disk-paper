@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage{url}
+\usepackage{hyperref}
 
 \fboxrule=3pt
 \fboxsep=4pt
@@ -26,7 +27,11 @@
 \begin{letter}{}
     \opening{Dear Editor Carraro, Data Editors, and Anonymous Reviewer,}
 
-    Please find our revised manuscript alongside the below response to the reviewers report. The authors would like to thank the editor, reviewer, and data editors for their thoughtful review, which has lead to a greatly improved manuscript. Changes have been highlighted in \textcolor{blue}{\bf blue}.
+    Please find our revised manuscript alongside the below response to the reviewer's report. The authors would like to thank the editor, reviewer, and data editors for their thoughtful review, which has lead to a greatly improved manuscript. Changes have been highlighted in \textcolor{blue}{\bf blue}.
+
+    In addition to responding to the reviewer's report, the authors have added text referencing the recent strong evidence for the first polar circumbinary planet\footnote{
+    Baycroft, T. A., Sairam, L., Triaud, A. H. M. J., \& Correia, 760
+A. C. M. 2025, Science Advances, 11, eadu0627,761 doi: \href{http://doi.org/10.1126/sciadv.adu0627}{10.1126/sciadv.adu0627}}. Please see lines 41-46 and 711-714.
 
     \begin{response}{Reviewer's Comment}
         Authors' Response
@@ -108,7 +113,7 @@
     \begin{response}
         {L580: I would conclude the discussion (or add to the conclusion) that, besides imposing constraints on the disc radial extend and j, the two studied mechanisms (disc breaking and self-gravity) are expected to lower the fraction of polar CBDs. If I understood correctly, large values of j and radially extended discs are unlikely to become polar (as a whole at least). Therefore, the statistical relevance/weight of this subgroup of discs should be less important at the overall polar CBD population level. This could be briefly commented at the end.}
 
-        This is a great suggestion, however the overall effect is more complicated. For disks that break, $f_\text{polar}$ being ``the fraction of disks that evolve to a polar configuration'' may be less relevant than ``the fraction of systems that host a polar disk''. The main effect of disk breaking is that the alignment of the inner disk happens more quickly, reducing the fraction of systems which have neither a polar nor coplanar disk. The main effect of gravitational instability is that massive disks must be more radially extended, which could possibly lead to warps and breaks. The total effect likely would be that a single extended disk evolves into multiple disks with various degrees of alignment, whether that be polar or coplanar. We have added text at the end of the discussion to highlight these effects.
+        This is a great suggestion, however the overall effect is more complicated. The main effect of both mechanisms is to shorten the alignment timescale so that fewer disks are left in an arbitrarily misaligned state at the end of their lives. We have added text explaining how this process works for gravitationally unstable disks and commenting on the shortened timescale for both effects.
     \end{response}
 
     \begin{response}{
@@ -142,16 +147,16 @@
 
     \begin{response}
         {
-            II. I don't see the Zenodo DOI results tagged in the text. Can that be added using the instructions here: \url{https://journals.aas.org/aastexguide/#datasets}
+            II. I don't see the Zenodo DOI results tagged in the text. Can that be added using the instructions here: \url{https://journals.aas.org/aastexguide/\#datasets}
         }
         We have added the Zenodo DOI for this dataset to the caption of Figure 3.
     \end{response}
 
     \begin{response}
         {
-            III. For Showyourwork papers, we would like to you to freeze the final final version on GitHub and add that Zenodo DOI to the text as well. More information is here: \url{https://journals.aas.org/aastexguide/#datasets}
+            III. For Showyourwork papers, we would like to you to freeze the final final version on GitHub and add that Zenodo DOI to the text as well. More information is here: \url{https://journals.aas.org/aastexguide/\#datasets}
 
-            [2] \url{https://journals.aas.org/data-guide/#repositories}
+            [2] \url{https://journals.aas.org/data-guide/\#repositories}
 
 [3] \url{https://docs.github.com/en/repositories/archiving-a-github-repository/referencing-and-citing-content} 
         }
@@ -165,7 +170,7 @@
 
 [1] \url{https://journals.aas.org/policy-statement-on-software/}
 
-[2] \url{https://journals.aas.org/data-guide/#repositories}
+[2] \url{https://journals.aas.org/data-guide/\#repositories}
 
 [3] \url{https://docs.github.com/en/repositories/archiving-a-github-repository/referencing-and-citing-content}
         }

@@ -97,7 +97,7 @@ if __name__ in '__main__':
     ax.set_aspect('equal')
     ax.set_xlabel('$i~\\cos{\\Omega}$')
     ax.set_ylabel('$i~\\sin{\\Omega}$')
-    ax.legend(lines,["Prograde","Retrograde","Librating"])
+    ax.legend(lines,["Prograde Circulation","Retrograde Circulation","Libration"])
     ax.set_xticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
     ax.set_yticks([-np.pi,-np.pi/2,0,np.pi/2,np.pi])
     ax.set_xticklabels([r'$-\pi$',r'$-\pi/2$',r'$0$',r'$\pi/2$',r'$\pi$'],fontsize=12)

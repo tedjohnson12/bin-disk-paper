@@ -64,7 +64,7 @@ if __name__ == '__main__':
         before_prograde = np.arange(0,len(js)) < first_prograde
         after_prograde = np.arange(0,len(js)) >= first_prograde
         is_last_prograde = np.arange(0,len(js)) == last_prograde
-        ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='-',lw=2,label='Prograde')
+        ax.plot(js[is_prograde],rats[is_prograde],color=colors.state_colors['p'],ls='-',lw=2,label='Circulating')
         ax.plot(js[is_librating & before_prograde],rats[is_librating & before_prograde],color=colors.state_colors['l'],ls='-',lw=2,label='Librating')
         ax.plot(js[(is_librating & after_prograde) | is_last_prograde],rats[(is_librating & after_prograde) | is_last_prograde],color=colors.state_colors['l'],ls='-',lw=2)
     else:

@@ -104,10 +104,10 @@ if __name__ == '__main__':
     ]
     ax_cartesian.legend(
         patches,
-        ['Prograde','Polar','Retrograde'],
+        ['Prograde Coplanar',f'Polar ($f_{{\\rm polar}} = {frac:.3f}$)','Retrograde Coplanar'],
         loc=(0.,1.05)
     )
-    ax_cartesian.text(0.6, 1.05, f'$f_{{\\rm polar}} = {frac:.3f}$',transform=ax_cartesian.transAxes)
+    # ax_cartesian.text(0.6, 1.05, f'$f_{{\\rm polar}} = {frac:.3f}$',transform=ax_cartesian.transAxes)
     
     fig.savefig(OUTFILE)
     

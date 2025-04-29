@@ -34,9 +34,9 @@ rk_err = paths.output/'rk_err.txt'
 
 STATE_LONG_NAMES = {
     system.UNKNOWN : 'Unknown',
-    system.PROGRADE: 'Prograde',
-    system.RETROGRADE: 'Retrograde',
-    system.LIBRATING: 'Librating'
+    system.PROGRADE: 'Circulation',
+    system.RETROGRADE: 'Retrograde Circulation',
+    system.LIBRATING: 'Libration'
 }
 
 
@@ -218,7 +218,10 @@ def plot_scatter(_ax: plt.Axes,_sampler: mc.Sampler):
     x = incl*np.cos(lon_asc_node)
     y = incl*np.sin(lon_asc_node)
     for state in [system.LIBRATING, system.RETROGRADE, system.PROGRADE, system.UNKNOWN]:
-        _ax.scatter(lon_asc_node[states==state], incl[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
+        if (states==state).sum() == 0:
+            pass
+        else:
+            _ax.scatter(lon_asc_node[states==state], incl[states==state], c=color[state], s=50,label=STATE_LONG_NAMES[state],marker='.')
 def plot_discrepancy(_ax: plt.Axes, _ax_polar: plt.Axes,_sampler: mc.Sampler):
     lon_asc_node = np.array(_sampler.lon_ascending_nodes)
     incl = np.array(_sampler.inclinations)

@@ -1,5 +1,5 @@
 % Define document class
-\documentclass[twocolumn,linenumbers]{aastex631}
+\documentclass[twocolumn]{aastex631}
 \usepackage{showyourwork}
 \usepackage{amsmath}
 \usepackage{bm}
@@ -13,7 +13,7 @@
 
 \newcommand{\TJ}[1]{\textcolor{orange}{#1}}
 \newcommand{\RGM}[1]{\textcolor{cyan}{#1}}
-\newcommand{\RR}[1]{\textcolor{blue}{\bf#1}} % reviewer's report
+\newcommand{\RR}[1]{{#1}} % reviewer's report
 \newcommand{\RP}[1]{\RR{#1}} % Retrograde/Prograde confusion
 
 \DeclareMathOperator{\arctantwo}{arctan2}
@@ -26,7 +26,7 @@
 \title{The fraction of polar aligned circumbinary disks}
 
 % Author list
-\author[0000-0002-1570-2203]{Ted Johnson}
+\author[0000-0002-1570-2203]{Ted M. Johnson}
 %\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
 \author[0000-0003-2401-7168]{Rebecca G. Martin}
 %\affiliation{Department of Physics and Astronomy, University of Nevada, Las Vegas, 4505 South Maryland Parkway, Las Vegas, NV 89154, USA}
@@ -460,17 +460,15 @@ These results for $f_\text{polar}$ can be tested through population-level observ
 $f_\text{polar}$ could also be inferred from the frequency of polar planets. \citet{zhang2019} show that retrograde apsidal precession of a binary can be caused by a polar circumbinary planet and develop a method to detect such precession in eclipsing binaries via eclipse timing variations. \citet{baycroft2025} successfully detect retrograde apsidal precession using radial velocity measurements, and conclude that a polar planet is the only suitable explanation. Both of these methods could be applied to the population of known eclipsing binaries. Compared to the imaging method suggested previously, planet-focused methods would be most sensitive to small separations from the binary, meaning the alignment timescale for the progenitor disk would be much shorter than for those can can be resolved via imaging. Together, however, these two methods (disk imaging, apsidal precession inference) could provide robust constraints of $f_\text{polar}$ across many regimes of host parameters and disk separation.
 }
 
+\vspace{1cm} % get rid of line numbers for arxiv
 
-\begin{acknowledgements}
-\label{sec:ack}
 
 We acknowledge support from NASA through grants 80NSSC21K0395 and 80NSSC19K0443. This manuscript was prepared using the open-science software \href{https://show-your.work/en/latest/intro/}{\showyourwork} \citep{luger2021}, making the article completely
 reproducible. The source code to compile this document and create the figures is available on GitHub\footnote{\ghurl}.
 Simulations in this paper made use of the {\sc rebound} N-body code \citep{rebound}.
 The simulations were integrated using IAS15, a 15th order Gauss-Radau integrator \citep{reboundias15}. 
 
-\end{acknowledgements}
-
+\pagebreak
 \appendix
 
 \section{Computing $\Gamma_2$}
